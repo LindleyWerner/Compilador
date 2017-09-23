@@ -9,6 +9,7 @@ import java.util.*;
  */
 public class Lexer {
     public static int line = 1; //line counter
+    public static boolean eof = false;
     private char ch = ' '; //read file character
     private FileReader file;
         
@@ -46,7 +47,9 @@ public class Lexer {
 
     //Reads next file character
     private void readch() throws IOException{
-        ch = (char) file.read();
+        int c;
+        if((c = file.read()) != -1) ch = (char) c;
+        else eof = true;            
     }
     
     //Reads next file character and check if it is equal to c
@@ -61,7 +64,8 @@ public class Lexer {
     public Token scan() throws IOException{
         //Ignore delimiters
         for(;; readch()){
-            if(ch == ' ' || ch == '\t' || ch == '\r' || ch == '\b') continue;
+            if (eof) return null;
+            else if(ch == ' ' || ch == '\t' || ch == '\r' || ch == '\b') continue;
             else if(ch == '\n') line++; //line counter
             else break;
         }
@@ -102,7 +106,7 @@ public class Lexer {
         
         //Identifiers
         if(Character.isLetter(ch)){
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             do{
                 sb.append(ch);
                 readch();
