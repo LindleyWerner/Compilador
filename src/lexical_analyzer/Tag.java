@@ -4,30 +4,69 @@ package lexical_analyzer;
  *
  * @author Lindley and Nícolas
  */
-public class Tag {
-    public final static int
-            //Reserved words
-            PROGRAM = 256,
-            END = 257,
-            INT = 258,
-            STRING = 259,
-            IF = 260,
-            THEN = 261,            
-            ELSE = 262,
-            DO = 263,
-            WHILE = 264,
-            SCAN = 265,
-            PRINT = 266,
-            
-            //Operators
-            EQ = 267, // ==            
-            GE = 268, // >=            
-            LE = 269, // <=
-            NE = 230, // !=
-            OR = 231, // ||            
-            AND = 232, // &&
-            
-            //Another tokens
-            NUM = 233,
-            ID = 234;
+public enum Tag {
+    //Reserved words
+    PROGRAM("program"),
+    END("end"),
+    INT("int"),
+    STRING("string"),
+    IF("if"),
+    THEN("then"),
+    ELSE("else"),
+    DO("do"),
+    WHILE("while"),
+    SCAN("scan"),
+    PRINT("print"),
+    
+    //comments
+    LINE_COMMENT("//"),
+    OPEN_BLOCK_COMMENT("/*"), 
+    CLOSE_BLOCK_COMMENT("*/"),
+
+    //simbols
+    OPEN_PAREN("("), 
+    CLOSE_PAREN(")"), 
+    DOT_COMMA(";"),
+    COMMA(","),
+    ASSIGN("="),
+    OPEN_ASPAS("“"),
+    CLOSE_ASPAS("”"), // " 
+
+    // Arithmetic  Operators
+    PLUS("+"),
+    MINUS("-"), 
+    DIV("/"), 
+    MULT("*"),
+
+    // Logitacal Operators
+    EQ("=="),             
+    GT(">"), 
+    GE(">="),             
+    LT("<"),            
+    LE("<="), 
+    NE("!="),
+    OR("||"),            
+    AND("&&"),           
+    NOT("!"), 
+
+    //Another tokens
+    NUM,
+    ID,
+    DIFERENTS_TAGS(),
+    
+    // errors tokens
+    ERROR;
+
+    private String name="";
+    
+    public String getName(){
+        return name;
+    }
+    
+    private Tag(String name) {
+        this.name = name;
+    }
+
+    private Tag() {
+    }
 }

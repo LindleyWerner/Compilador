@@ -13,6 +13,7 @@ public class Num extends Token{
     }
     
     public String toString(){
-        return "" + value;
+        return "<" + tag.name() + " (\"" + value + "\")>";
     }
+    
 }

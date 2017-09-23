@@ -19,7 +19,7 @@ public class Compiler {
         while(true){
             System.out.println("Digite o nome do arquivo a ser compilado: ");
             Scanner input = new Scanner (System.in);
-            String fileName = input.nextLine();
+            String fileName = "teste1.txt";//input.nextLine();
             fileName = "./codigosParaTeste/" + fileName;  
             
             try {
