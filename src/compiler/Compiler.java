@@ -17,7 +17,7 @@ public class Compiler {
         while(true){
             System.out.println("Digite o nome do arquivo a ser compilado: ");
             Scanner input = new Scanner (System.in);
-            String fileName = "teste4.txt";//input.nextLine();
+            String fileName = "teste6.txt";//input.nextLine();
             fileName = "./codigosParaTeste/" + fileName;  
             
             try {
@@ -41,5 +41,6 @@ public class Compiler {
                 break;
             }
         }
+        lexer.printTS();
     }    
 }

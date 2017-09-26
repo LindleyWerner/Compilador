@@ -94,8 +94,7 @@ public class Lexer {
                 return null;
             } else if (ch == ' ' || ch == '\t'
                     || ch == Character.toChars(65279)[0] || ch == '\r'
-                    || ch == '\b') {
-                continue;
+                    || ch == '\b') {                
             } else if (ch == '\n') {
                 line++; //line counter
             } else {
@@ -117,6 +116,7 @@ public class Lexer {
                     ch=' ';
                     return Token.line_comment;
                 } else if (readch('*')) {
+                    int startLine = line;
                     while(true){
                         readch();
                         if(ch == '\n'){
@@ -129,7 +129,7 @@ public class Lexer {
                             }
                         }else{
                             if(eof){
-                                return new Error(line,"*/");
+                                return new Error(startLine,"*/",true);
                             }
                         }
                     }                    
@@ -161,15 +161,12 @@ public class Lexer {
             case ',':
                 ch=' ';
                 return Token.comma;
-            case '“':
+            case '"':
                 StringBuilder lb = new StringBuilder();
-                while(!readch('”')){                    
-                    lb.append(ch);
-                    if(ch == '\n'){
-                        line++;
-                    }
-                    if(eof){
-                        return new Error(line,"”");
+                while(!readch('"')){                    
+                    lb.append(ch);                   
+                    if(eof || ch == '\n'){
+                        return new Error(line,"\"",true);
                     }
                     readch();
                 }
@@ -208,13 +205,13 @@ public class Lexer {
                 if (readch('|')) {
                     return Token.or;
                 }else{
-                    return new Error(line,"|");
+                    return new Error(line,"|",true);
                 }
             case '&':
                 if (readch('&')) {
                     return Token.and;
                 }else{
-                    return new Error(line,"&");
+                    return new Error(line,"&",true);
                 }
         }
 
@@ -246,8 +243,13 @@ public class Lexer {
             return w;
         }
         
+        char aux = ch;
         ch = ' ';
-        return new Error(line," ");
+        return new Error(line,""+aux,false);
         
+    }
+    
+    public void printTS(){
+        System.out.println(words);
     }
 }

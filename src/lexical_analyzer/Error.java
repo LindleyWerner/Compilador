@@ -6,19 +6,21 @@ package lexical_analyzer;
  */
 public class Error extends Token{
     private int line = -1;
-    private String expected;
+    private String lexeme;
+    private boolean expected;
     
-    public Error(int line, String expected){
+    public Error(int line, String lexeme, boolean expected){
         super(Tag.ERROR);
         this.line = line;
+        this.lexeme = lexeme;
         this.expected = expected;
     }
         
     public String toString(){
-        if(expected == " "){
-            return "<" + tag.name() + " (linha: " + line + ", caracter não esperado)>";
+        if(expected){
+            return "<" + tag.name() + " (linha: " + line + ", esperado: \"" + lexeme + "\")>";
         }else{
-            return "<" + tag.name() + " (linha: " + line + ", esperado: \"" + expected + "\")>";
+            return "<" + tag.name() + " (linha: " + line + ", caracter inesperado: \"" + lexeme + "\")>";
         }
     }
     
