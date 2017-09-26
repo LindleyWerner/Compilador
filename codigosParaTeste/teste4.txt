@@ -1,5 +1,6 @@
  int: a, aux$, b;
  string nome, sobrenome, msg;
+
  print(Nome: );
  scan (nome);
  print(“Sobrenome: ”);
@@ -8,6 +9,7 @@
 sobrenome + “!”;
  msg = msg + 1;
  print (msg);
+
  scan (a);
  scan(b);
  if (a>b) then

@@ -1,6 +1,7 @@
 program
  int pontuacao, pontuacaoMaxima, disponibilidade;
  string pontuacaoMinima;
+
  disponibilidade = “Sim”;
  pontuacaoMinima = 50;
  pontuacaoMaxima = 100;
@@ -12,6 +13,7 @@ program
  scan(pontuacao);
  print(“Disponibilidade Candidato: ”);
  scan(disponibilidade);
+
  if ((pontuação > pontuacaoMinima) and (disponibilidade==“Sim”) then
  print(“Candidato aprovado”);
  else

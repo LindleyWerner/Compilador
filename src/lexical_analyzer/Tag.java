@@ -20,8 +20,9 @@ public enum Tag {
     
     //comments
     LINE_COMMENT("//"),
-    OPEN_BLOCK_COMMENT("/*"), 
-    CLOSE_BLOCK_COMMENT("*/"),
+    BLOCK_COMMENT("/**/"),
+    //OPEN_BLOCK_COMMENT("/*"), 
+    //CLOSE_BLOCK_COMMENT("*/"),
 
     //simbols
     OPEN_PAREN("("), 
@@ -29,8 +30,8 @@ public enum Tag {
     DOT_COMMA(";"),
     COMMA(","),
     ASSIGN("="),
-    OPEN_ASPAS("“"),
-    CLOSE_ASPAS("”"), // " 
+    //OPEN_ASPAS("“"),
+    //CLOSE_ASPAS("”"), // " 
 
     // Arithmetic  Operators
     PLUS("+"),

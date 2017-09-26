@@ -23,16 +23,17 @@ public class Token {
     
 
     public static final Token line_comment = new Token(Tag.LINE_COMMENT);
-    public static final Token open_block_comment = new Token(Tag.OPEN_BLOCK_COMMENT);
-    public static final Token close_block_comment = new Token(Tag.CLOSE_BLOCK_COMMENT);
+    public static final Token block_comment = new Token(Tag.BLOCK_COMMENT);
+    //public static final Token open_block_comment = new Token(Tag.OPEN_BLOCK_COMMENT);
+    //public static final Token close_block_comment = new Token(Tag.CLOSE_BLOCK_COMMENT);
 
     public static final Token open_paren = new Token(Tag.OPEN_PAREN);
     public static final Token close_paren = new Token(Tag.CLOSE_PAREN);
     public static final Token dot_comma = new Token(Tag.DOT_COMMA);
     public static final Token comma = new Token(Tag.COMMA);
     public static final Token assing = new Token(Tag.ASSIGN);
-    public static final Token open_aspas = new Token(Tag.OPEN_ASPAS);
-    public static final Token close_aspas = new Token(Tag.CLOSE_ASPAS);
+    //public static final Token open_aspas = new Token(Tag.OPEN_ASPAS);
+    //public static final Token close_aspas = new Token(Tag.CLOSE_ASPAS);
 
     public static final Token plus = new Token(Tag.PLUS);
     public static final Token minus = new Token(Tag.MINUS);

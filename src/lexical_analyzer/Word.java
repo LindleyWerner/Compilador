@@ -1,7 +1,5 @@
 package lexical_analyzer;
 
-import lexical_analyzer.Token;
-
 /**
  *
  * @author Lindley and Nícolas

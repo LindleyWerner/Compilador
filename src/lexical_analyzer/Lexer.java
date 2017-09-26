@@ -44,7 +44,7 @@ public class Lexer {
         }
 
         //Insert reserved words in hashtable
-      /*  reserve(new Word("program", Tag.PROGRAM));
+        reserve(new Word("program", Tag.PROGRAM));
         reserve(new Word("end", Tag.END));
         reserve(new Word("int", Tag.INT));
         reserve(new Word("string", Tag.STRING));
@@ -54,7 +54,7 @@ public class Lexer {
         reserve(new Word("do", Tag.DO));
         reserve(new Word("while", Tag.WHILE));
         reserve(new Word("scan", Tag.SCAN));
-        reserve(new Word("print", Tag.PRINT));*/
+        reserve(new Word("print", Tag.PRINT));
     }
 
     void readAllFile() throws IOException {
@@ -107,18 +107,38 @@ public class Lexer {
         switch (ch) {
             case '/':
                 if (readch('/')) {
+                    while(!readch('\n')){
+                        if(eof){
+                            break;
+                        }
+                        readch();
+                    }
+                    line++;
+                    ch=' ';
                     return Token.line_comment;
                 } else if (readch('*')) {
-                    return Token.open_block_comment;
+                    while(true){
+                        readch();
+                        if(ch == '\n'){
+                            line++;
+                        }
+                        if(ch == '*'){
+                            if(readch('/')){
+                                ch=' ';
+                                return Token.block_comment;
+                            }
+                        }else{
+                            if(eof){
+                                return new Error(line,"*/");
+                            }
+                        }
+                    }                    
                 } else {
                     return Token.div;
                 }
-            case '*':
-                if (readch('/')) {
-                    return Token.close_block_comment;
-                } else {
-                    return Token.mult;
-                }
+            case '*': 
+                ch = ' ';
+                return Token.mult;
             case '+':
                 ch=' ';
                 return Token.plus;
@@ -142,11 +162,20 @@ public class Lexer {
                 ch=' ';
                 return Token.comma;
             case '“':
+                StringBuilder lb = new StringBuilder();
+                while(!readch('”')){                    
+                    lb.append(ch);
+                    if(ch == '\n'){
+                        line++;
+                    }
+                    if(eof){
+                        return new Error(line,"”");
+                    }
+                    readch();
+                }
+                Word s = new Word(lb.toString(),Tag.STRING);
                 ch=' ';
-                return Token.open_aspas;
-            case '”':
-                ch=' ';
-                return Token.close_aspas;
+                return s;
         }
 
         //Operators
@@ -178,10 +207,14 @@ public class Lexer {
             case '|':
                 if (readch('|')) {
                     return Token.or;
+                }else{
+                    return new Error(line,"|");
                 }
             case '&':
                 if (readch('&')) {
                     return Token.and;
+                }else{
+                    return new Error(line,"&");
                 }
         }
 
@@ -194,50 +227,7 @@ public class Lexer {
             } while (Character.isDigit(ch));
             return new Num(value);
         }
-
-        //Reserved words
-        switch (ch) {
-            case 'p':
-                if (readch('r')) {
-                    if (readch('o') && readch('g') && readch('r') && readch('a') && readch('m')) {
-                        return Token.program;
-                    } else if (readch('i') && readch('n') && readch('t')) {
-                        return Token.print;
-                    }
-                }
-            case 'e':
-                if (readch('n') && readch('d')) {
-                    return Token.end;
-                }
-                if (readch('l') && readch('s') && readch('e')) {
-                    return Token.elsE;
-                }
-            case 'i':
-                if (readch('f')) {
-                    return Token.iF;
-                } else if (readch('n') && readch('t')) {
-                    return Token.inT;
-                }
-            case 't':
-                if (readch('h') && readch('e') && readch('n')) {
-                    return Token.then;
-                }
-            case 'd':
-                if (readch('o')) {
-                    return Token.dO;
-                }
-            case 'w':
-                if (readch('h') && readch('i') && readch('l') && readch('e')) {
-                    return Token.whilE;
-                }
-            case 's':
-                if (readch('c') && readch('a' ) && readch('n')) {
-                    return Token.scan;
-                } else if (readch('t') && readch('r') && readch('i') && readch('n') && readch('g')) {
-                    return Token.string;
-                }
-        }
-
+        
         //Identifiers
         if (Character.isLetter(ch)) {
             StringBuilder sb = new StringBuilder();
@@ -255,10 +245,9 @@ public class Lexer {
             words.put(s, w);
             return w;
         }
-
-        // error
-        Word word=new Word(""+ch,Tag.DIFERENTS_TAGS);
+        
         ch = ' ';
-        return word;
+        return new Error(line," ");
+        
     }
 }

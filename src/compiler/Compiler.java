@@ -3,8 +3,6 @@ package compiler;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lexical_analyzer.Lexer;
 import lexical_analyzer.Token;
 
@@ -19,7 +17,7 @@ public class Compiler {
         while(true){
             System.out.println("Digite o nome do arquivo a ser compilado: ");
             Scanner input = new Scanner (System.in);
-            String fileName = "teste1.txt";//input.nextLine();
+            String fileName = "teste4.txt";//input.nextLine();
             fileName = "./codigosParaTeste/" + fileName;  
             
             try {
