@@ -16,4 +16,8 @@ public class Word extends Token{
         return "<" + tag.name() + " (\"" + lexeme + "\")>";
     }
     
+    public String getLexeme(){
+        return lexeme;
+    }
+    
 }

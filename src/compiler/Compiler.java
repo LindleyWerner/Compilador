@@ -17,7 +17,7 @@ public class Compiler {
         while(true){
             System.out.println("Digite o nome do arquivo a ser compilado: ");
             Scanner input = new Scanner (System.in);
-            String fileName = "teste6.txt";//input.nextLine();
+            String fileName = input.nextLine();
             fileName = "./codigosParaTeste/" + fileName;  
             
             try {
@@ -27,13 +27,14 @@ public class Compiler {
                 // TODO Qual o melhor jeito de tratar este erro?               
             }
         }
+        System.out.println("\nFluxo de Tokens\n");
         while(true){
             try {
                 // Get tokens
                 Token tk = lexer.scan();
                 // If it returns null is end of file
                 if(tk == null) break;
-                // TODO as vezes printa o nome e as vezes o número, está correto? 
+                
                 System.out.println(tk.toString());
             } catch (IOException ex) {
                 // TODO Fazer o quê com este erro?
@@ -41,6 +42,6 @@ public class Compiler {
                 break;
             }
         }
-        lexer.printTS();
+        lexer.printTabelaSimbolos();
     }    
 }

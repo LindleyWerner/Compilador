@@ -53,10 +53,10 @@ public enum Tag {
     //Another tokens
     NUM,
     ID,
-    DIFERENTS_TAGS(),
     
     // errors tokens
-    ERROR;
+    ERROR_CARACTER_INVALIDO,
+    ERROR_CARACTER_INESPERADO;
 
     private String name="";
     

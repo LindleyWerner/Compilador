@@ -23,7 +23,7 @@ public class Lexer {
     //Method to insert reserved words in hashtable
     private void reserve(Word w) {
         // TODO Ver se está correto
-        words.put(w.toString(), w); //lexeme is the key to entry into the hashtable
+        words.put(w.getLexeme(), w); //lexeme is the key to entry into the hashtable
 
     }
 
@@ -129,7 +129,7 @@ public class Lexer {
                             }
                         }else{
                             if(eof){
-                                return new Error(startLine,"*/",true);
+                                return new Error(startLine,"*/",Tag.ERROR_CARACTER_INESPERADO);
                             }
                         }
                     }                    
@@ -166,7 +166,7 @@ public class Lexer {
                 while(!readch('"')){                    
                     lb.append(ch);                   
                     if(eof || ch == '\n'){
-                        return new Error(line,"\"",true);
+                        return new Error(line,"\"",Tag.ERROR_CARACTER_INESPERADO);
                     }
                     readch();
                 }
@@ -205,13 +205,13 @@ public class Lexer {
                 if (readch('|')) {
                     return Token.or;
                 }else{
-                    return new Error(line,"|",true);
+                    return new Error(line,"|",Tag.ERROR_CARACTER_INESPERADO);
                 }
             case '&':
                 if (readch('&')) {
                     return Token.and;
                 }else{
-                    return new Error(line,"&",true);
+                    return new Error(line,"&",Tag.ERROR_CARACTER_INESPERADO);
                 }
         }
 
@@ -245,11 +245,14 @@ public class Lexer {
         
         char aux = ch;
         ch = ' ';
-        return new Error(line,""+aux,false);
+        return new Error(line,""+aux,Tag.ERROR_CARACTER_INVALIDO);
         
     }
     
-    public void printTS(){
-        System.out.println(words);
+    public void printTabelaSimbolos(){
+        System.out.println("\nTabela de Simbolos\n");
+        Object[] a=words.values().toArray();
+        for(int i=0;i<a.length;i++)
+            System.out.println(a[i]); 
     }
 }

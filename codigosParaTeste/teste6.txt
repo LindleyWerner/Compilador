@@ -1,5 +1,5 @@
-program
- int pontuacao, pontuacaoMaxima, disponibilidade;
+﻿program
+ int @ pontuacao, pontuacaoMaxima, disponibilidade;
  string pontuacaoMinima;
 
  disponibilidade = "Sim";
