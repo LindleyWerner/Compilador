@@ -1,5 +1,3 @@
-# Compilador
-
 Abra o terminal na pasta dist e digite:
 java -jar Compilador.txt
 
