@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 public class Lexer {
 
     public static int line = 1; //line counter
+    public static int error = 0; //error counter
     public static boolean eof = false;
     private char ch = ' '; //read file character
     private FileReader file;
@@ -129,6 +130,7 @@ public class Lexer {
                             }
                         }else{
                             if(eof){
+                                error++;
                                 return new Error(startLine,"*/",Tag.ERROR_CARACTER_INESPERADO);
                             }
                         }
@@ -166,6 +168,7 @@ public class Lexer {
                 while(!readch('"')){                    
                     lb.append(ch);                   
                     if(eof || ch == '\n'){
+                        error++;
                         return new Error(line,"\"",Tag.ERROR_CARACTER_INESPERADO);
                     }
                     readch();
@@ -179,38 +182,52 @@ public class Lexer {
         switch (ch) {
             case '=':
                 if (readch('=')) {
+                    ch = ' ';
                     return Token.eq;
                 } else {
+                    ch = ' ';
                     return Token.assing;
                 }
             case '>':
                 if (readch('=')) {
+                    ch = ' ';
                     return Token.ge;
                 } else {
+                    ch = ' ';
                     return Token.gt;
                 }
             case '<':
                 if (readch('=')) {
+                    ch = ' ';
                     return Token.le;
                 } else {
+                    ch = ' ';
                     return Token.lt;
                 }
             case '!':
                 if (readch('=')) {
+                    ch = ' ';
                     return Token.ne;
                 } else {
+                    ch = ' ';
                     return Token.not;
                 }
             case '|':
                 if (readch('|')) {
+                    ch = ' ';
                     return Token.or;
                 }else{
+                    ch = ' ';
+                    error++;
                     return new Error(line,"|",Tag.ERROR_CARACTER_INESPERADO);
                 }
             case '&':
                 if (readch('&')) {
+                    ch = ' ';
                     return Token.and;
                 }else{
+                    ch = ' ';
+                    error++;
                     return new Error(line,"&",Tag.ERROR_CARACTER_INESPERADO);
                 }
         }
@@ -245,6 +262,7 @@ public class Lexer {
         
         char aux = ch;
         ch = ' ';
+        error++;
         return new Error(line,""+aux,Tag.ERROR_CARACTER_INVALIDO);
         
     }
@@ -254,5 +272,9 @@ public class Lexer {
         Object[] a=words.values().toArray();
         for(int i=0;i<a.length;i++)
             System.out.println(a[i]); 
+    }
+    
+    public void howManyErrors(){
+        System.out.println("\n"+error+" erro(s) léxico(s)\n");
     }
 }

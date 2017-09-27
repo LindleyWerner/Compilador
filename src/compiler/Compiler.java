@@ -42,6 +42,7 @@ public class Compiler {
                 break;
             }
         }
+        lexer.howManyErrors();
         lexer.printTabelaSimbolos();
     }    
 }
