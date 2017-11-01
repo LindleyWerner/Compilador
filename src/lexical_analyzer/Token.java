@@ -40,10 +40,10 @@ public class Token {
 
     @Override
     public String toString() {
-        if (tag.getName() != "") {
-            return "<" + tag.name() + " (" + tag.getName() + ")>";
-        } else {
+        if (tag.getName().equals("")) {
             return "<" + tag.name() + ">";
+        } else {
+            return "<" + tag.name() + " (" + tag.getName() + ")>";
         }
     }
 

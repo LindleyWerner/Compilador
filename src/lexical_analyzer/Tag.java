@@ -53,6 +53,7 @@ public enum Tag {
     //Another tokens
     NUM,
     ID,
+    TEXT,
     
     // errors tokens
     ERROR_CARACTER_INVALIDO,

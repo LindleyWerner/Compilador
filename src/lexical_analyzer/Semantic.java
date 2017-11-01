@@ -18,19 +18,21 @@ import java.util.logging.Logger;
  */
 public class Semantic {
 
-    private Lexer lexer;
+    private final Lexer lexer;
     private Token tok;
     private final List<Tag> listTagEsperadas;
 
     public Semantic(String fileName) throws FileNotFoundException {
-        lexer = new Lexer(fileName);      
-        listTagEsperadas = new ArrayList<Tag>();
-     }
-    
-    public void start(){
-           advance();
+        lexer = new Lexer(fileName);
+        listTagEsperadas = new ArrayList<>();
+    }
+
+    public void start() {
+        advance();
         program();
-    };
+    }
+
+    ;
 
     private void advance() {
         try {
@@ -94,6 +96,22 @@ public class Semantic {
         } else {
             listTagEsperadas.add(Tag.INT);
             listTagEsperadas.add(Tag.STRING);
+            error();
+        }
+    }
+
+    private void identList() {
+        //ident-list ::= identifier {"," identifier}
+        if (tok.tag.compareTo(Tag.ID) == 0 // TODO letter 
+                ) {
+            indentifier();
+            while (tok.tag.compareTo(Tag.COMMA) == 0) {
+                eat(Tag.COMMA);
+                indentifier();
+            }
+        } else {
+            listTagEsperadas.add(Tag.ID);
+            // TODO letter
             error();
         }
     }
@@ -197,32 +215,193 @@ public class Semantic {
             eat(Tag.ELSE);
             stmtList();
             eat(Tag.END);
-        }else{
+        } else {
             listTagEsperadas.add(Tag.END);
             listTagEsperadas.add(Tag.ELSE);
             error();
         }
     }
-    
+
     private void condition() {
         //condition ::= expression
-        if (tok.tag.compareTo(Tag.NOT) == 0||
-            tok.tag.compareTo(Tag.MINUS) == 0
-            // TODO "
-            // TODO letter 
-            // TODO digit
-           ) {
+        if (tok.tag.compareTo(Tag.NOT) == 0
+                || tok.tag.compareTo(Tag.MINUS) == 0
+                || tok.tag.compareTo(Tag.OPEN_PAREN) == 0
+                || tok.tag.compareTo(Tag.ID) == 0
+                || tok.tag.compareTo(Tag.NUM) == 0
+                || tok.tag.compareTo(Tag.TEXT) == 0 // TODO "
+                // TODO letter 
+                // TODO digit
+                ) {
             expression();
-        }else{
+        } else {
             listTagEsperadas.add(Tag.NOT);
             listTagEsperadas.add(Tag.MINUS);
+            listTagEsperadas.add(Tag.OPEN_PAREN);
+            listTagEsperadas.add(Tag.ID);
+            listTagEsperadas.add(Tag.NUM);
+            listTagEsperadas.add(Tag.TEXT);
             // TODO "
             // TODO letter 
             // TODO digit
             error();
         }
     }
-    
+
+    private void whileStmt() {
+        //while-stmt ::= do stmt-list stmt-sufix
+        if (tok.tag.compareTo(Tag.DO) == 0) {
+            eat(Tag.DO);
+            stmtList();
+            stmtSufix();
+        } else {
+            listTagEsperadas.add(Tag.DO);
+            error();
+        }
+    }
+
+    private void stmtSufix() {
+        //   stmt-sufix ::= while condition end  
+        if (tok.tag.compareTo(Tag.WHILE) == 0) {
+            eat(Tag.WHILE);
+            condition();
+            eat(Tag.END);
+        } else {
+            listTagEsperadas.add(Tag.WHILE);
+            error();
+        }
+    }
+
+    private void readStmt() {
+        //read-stmt ::= scan "(" identifier ")"
+        if (tok.tag.compareTo(Tag.SCAN) == 0) {
+            eat(Tag.SCAN);
+            eat(Tag.OPEN_PAREN);
+            identifier();
+            eat(Tag.CLOSE_PAREN);
+        } else {
+            listTagEsperadas.add(Tag.SCAN);
+            error();
+        }
+    }
+
+    private void writeStmt() {
+        //write-stmt ::= print "(" writable ")"
+        if (tok.tag.compareTo(Tag.PRINT) == 0) {
+            eat(Tag.PRINT);
+            eat(Tag.OPEN_PAREN);
+            writeable();
+            eat(Tag.CLOSE_PAREN);
+        } else {
+            listTagEsperadas.add(Tag.PRINT);
+            error();
+        }
+    }
+
+    private void writeable() {
+        //writable ::= simple-expr
+        if (tok.tag.compareTo(Tag.NOT) == 0
+                || tok.tag.compareTo(Tag.MINUS) == 0
+                || tok.tag.compareTo(Tag.OPEN_PAREN) == 0
+                || tok.tag.compareTo(Tag.ID) == 0
+                || tok.tag.compareTo(Tag.NUM) == 0 // TODO letter 
+                // TODO digit
+                ) {
+            simpleExpr();
+        } else if (tok.tag.compareTo(Tag.TEXT) == 0) {
+            literal();// TODO "
+        } //writable ::= literal
+        else {
+            listTagEsperadas.add(Tag.NOT);
+            listTagEsperadas.add(Tag.MINUS);
+            listTagEsperadas.add(Tag.OPEN_PAREN);
+            listTagEsperadas.add(Tag.ID);
+            listTagEsperadas.add(Tag.NUM);
+            listTagEsperadas.add(Tag.TEXT);
+            // TODO "
+            // TODO letter 
+            // TODO digit
+            error();
+        }
+    }
+
+    private void expression() {
+        // expression ::= simple-expr expression’
+        if (tok.tag.compareTo(Tag.NOT) == 0
+                || tok.tag.compareTo(Tag.MINUS) == 0
+                || tok.tag.compareTo(Tag.OPEN_PAREN) == 0
+                || tok.tag.compareTo(Tag.ID) == 0
+                || tok.tag.compareTo(Tag.NUM) == 0
+                || tok.tag.compareTo(Tag.TEXT) == 0 // TODO "
+                // TODO letter 
+                // TODO digit
+                ) {
+            simpleExpr();
+            expressionPrime();
+        } else {
+            listTagEsperadas.add(Tag.NOT);
+            listTagEsperadas.add(Tag.MINUS);
+            listTagEsperadas.add(Tag.OPEN_PAREN);
+            listTagEsperadas.add(Tag.ID);
+            listTagEsperadas.add(Tag.NUM);
+            listTagEsperadas.add(Tag.TEXT);
+            // TODO "
+            // TODO letter 
+            // TODO digit
+            error();
+        }
+
+    }
+
+    private void expressionPrime() {
+        //expression’ ::= 𝛌
+        if (tok.tag.compareTo(Tag.THEN) == 0
+                || tok.tag.compareTo(Tag.END) == 0
+                || tok.tag.compareTo(Tag.CLOSE_PAREN) == 0) {
+        } //expression’ ::= relop simple-expr
+        else if (tok.tag.compareTo(Tag.EQ) == 0
+                || tok.tag.compareTo(Tag.GT) == 0
+                || tok.tag.compareTo(Tag.GE) == 0
+                || tok.tag.compareTo(Tag.LT) == 0
+                || tok.tag.compareTo(Tag.LE) == 0
+                || tok.tag.compareTo(Tag.NE) == 0) {
+            relop();
+            simpleExpr();
+
+        }
+    }
+
+    private void simpleExpr() {
+        //simple-expr ::= term simple-expr’
+        if (tok.tag.compareTo(Tag.NOT) == 0
+                || tok.tag.compareTo(Tag.MINUS) == 0
+                || tok.tag.compareTo(Tag.OPEN_PAREN) == 0
+                || tok.tag.compareTo(Tag.ID) == 0
+                || tok.tag.compareTo(Tag.NUM) == 0
+                || tok.tag.compareTo(Tag.TEXT) == 0 // TODO "
+                // TODO letter 
+                // TODO digit
+                ) {
+            term();
+            simpleExprPrime();
+        } else {
+            listTagEsperadas.add(Tag.NOT);
+            listTagEsperadas.add(Tag.MINUS);
+            listTagEsperadas.add(Tag.OPEN_PAREN);
+            listTagEsperadas.add(Tag.ID);
+            listTagEsperadas.add(Tag.NUM);
+            listTagEsperadas.add(Tag.TEXT);
+            // TODO "
+            // TODO letter 
+            // TODO digit
+            error();
+        }
+    }
+
+    private void relop() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     private void letter() {
         //eat(Tag.);
     }
@@ -235,14 +414,6 @@ public class Semantic {
         eat(Tag.STRING); //TODO letter
     }
 
-    private void identList() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private void whileStmt() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     private void scan() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -251,17 +422,24 @@ public class Semantic {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void simpleExpr() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     private void identifier() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void expression() {
+    private void literal() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    private void simpleExprPrime() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void term() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void indentifier() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

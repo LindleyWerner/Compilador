@@ -58,7 +58,7 @@ public class Lexer {
         reserve(new Word("print", Tag.PRINT));
     }
 
-    void readAllFile() throws IOException {
+    private  void readAllFile() throws IOException {
         int c;
         while ((c = file.read()) != -1) {
             text.add(c);
@@ -173,7 +173,7 @@ public class Lexer {
                     }
                     readch();
                 }
-                Word s = new Word(lb.toString(),Tag.STRING);
+                Word s = new Word(lb.toString(),Tag.TEXT);
                 ch=' ';
                 return s;
         }
