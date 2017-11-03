@@ -263,7 +263,7 @@ public class FollowTable {
         List<Tag> relop = new ArrayList<>();
         relop.add(Tag.ID);
         relop.add(Tag.NUM);
-        relop.add(Tag.STRING);
+        relop.add(Tag.TEXT);
         relop.add(Tag.OPEN_PAREN);
         relop.add(Tag.NOT);
         relop.add(Tag.MINUS);
@@ -273,7 +273,7 @@ public class FollowTable {
         List<Tag> addop = new ArrayList<>();
         addop.add(Tag.ID);
         addop.add(Tag.NUM);
-        addop.add(Tag.STRING);
+        addop.add(Tag.TEXT);
         addop.add(Tag.OPEN_PAREN);
         addop.add(Tag.NOT);
         addop.add(Tag.MINUS);
@@ -283,7 +283,7 @@ public class FollowTable {
         List<Tag> mulop = new ArrayList<>();
         mulop.add(Tag.ID);
         mulop.add(Tag.NUM);
-        mulop.add(Tag.STRING);
+        mulop.add(Tag.TEXT);
         mulop.add(Tag.OPEN_PAREN);
         follow.put("mulop", mulop);
         
