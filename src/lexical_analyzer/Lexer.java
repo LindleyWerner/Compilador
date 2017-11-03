@@ -98,7 +98,7 @@ public class Lexer {
         //Ignore delimiters
         for (;; readch()) {
             if (eof) {
-                return null;
+                return new Token(Tag.EOF);
             } else if (ch == ' ' || ch == '\t'
                     || ch == Character.toChars(65279)[0] || ch == '\r'
                     || ch == '\b') {                
@@ -179,7 +179,7 @@ public class Lexer {
                     }
                     readch();
                 }
-                Word s = new Word(lb.toString(),Tag.STRING);
+                Word s = new Word(lb.toString(),Tag.TEXT);
                 ch=' ';
                 return s;
         }
