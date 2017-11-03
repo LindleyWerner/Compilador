@@ -35,7 +35,7 @@ public class Lexer {
         eof = false;
         ch = ' ';
         controladorText = 0;
-        
+
         try {
             file = new FileReader(fileName);
         } catch (FileNotFoundException e) {
@@ -64,7 +64,7 @@ public class Lexer {
         reserve(new Word("print", Tag.PRINT));
     }
 
-    private  void readAllFile() throws IOException {
+    private void readAllFile() throws IOException {
         int c;
         while ((c = file.read()) != -1) {
             text.add(c);
@@ -101,7 +101,7 @@ public class Lexer {
                 return new Token(Tag.EOF);
             } else if (ch == ' ' || ch == '\t'
                     || ch == Character.toChars(65279)[0] || ch == '\r'
-                    || ch == '\b') {                
+                    || ch == '\b') {
             } else if (ch == '\n') {
                 line++; //line counter
             } else {
@@ -113,74 +113,74 @@ public class Lexer {
         switch (ch) {
             case '/':
                 if (readch('/')) {
-                    while(!readch('\n')){
-                        if(eof){
+                    while (!readch('\n')) {
+                        if (eof) {
                             break;
                         }
                         readch();
                     }
                     line++;
-                    ch=' ';
+                    ch = ' ';
                     return Token.line_comment;
                 } else if (readch('*')) {
                     int startLine = line;
-                    while(true){
+                    while (true) {
                         readch();
-                        if(ch == '\n'){
+                        if (ch == '\n') {
                             line++;
                         }
-                        if(ch == '*'){
-                            if(readch('/')){
-                                ch=' ';
+                        if (ch == '*') {
+                            if (readch('/')) {
+                                ch = ' ';
                                 return Token.block_comment;
                             }
-                        }else{
-                            if(eof){
+                        } else {
+                            if (eof) {
                                 error++;
-                                return new Error(startLine,"*/",Tag.ERROR_CARACTER_INESPERADO, Token.block_comment);
+                                return new Error(startLine, "*/", Tag.ERROR_CARACTER_INESPERADO, Token.block_comment);
                             }
                         }
-                    }                    
+                    }
                 } else {
                     return Token.div;
                 }
-            case '*': 
+            case '*':
                 ch = ' ';
                 return Token.mult;
             case '+':
-                ch=' ';
+                ch = ' ';
                 return Token.plus;
             case '-':
-                ch=' ';
+                ch = ' ';
                 return Token.minus;
         }
 
         //simbols
         switch (ch) {
             case '(':
-                ch=' ';
+                ch = ' ';
                 return Token.open_paren;
             case ')':
-                ch=' ';
+                ch = ' ';
                 return Token.close_paren;
             case ';':
-                ch=' ';
+                ch = ' ';
                 return Token.dot_comma;
             case ',':
-                ch=' ';
+                ch = ' ';
                 return Token.comma;
             case '"':
                 StringBuilder lb = new StringBuilder();
-                while(!readch('"')){                    
-                    lb.append(ch);                   
-                    if(eof || ch == '\n'){
+                while (!readch('"')) {
+                    lb.append(ch);
+                    if (eof || ch == '\n') {
                         error++;
-                        return new Error(line,"\"",Tag.ERROR_CARACTER_INESPERADO, new Word(lb.toString(),Tag.TEXT));
+                        return new Error(line, "\"", Tag.ERROR_CARACTER_INESPERADO, new Word(lb.toString(), Tag.TEXT));
                     }
                     readch();
                 }
-                Word s = new Word(lb.toString(),Tag.TEXT);
-                ch=' ';
+                Word s = new Word(lb.toString(), Tag.TEXT);
+                ch = ' ';
                 return s;
         }
 
@@ -222,19 +222,19 @@ public class Lexer {
                 if (readch('|')) {
                     ch = ' ';
                     return Token.or;
-                }else{
+                } else {
                     ch = ' ';
                     error++;
-                    return new Error(line,"|",Tag.ERROR_CARACTER_INESPERADO, Token.or);
+                    return new Error(line, "|", Tag.ERROR_CARACTER_INESPERADO, Token.or);
                 }
             case '&':
                 if (readch('&')) {
                     ch = ' ';
                     return Token.and;
-                }else{
+                } else {
                     ch = ' ';
                     error++;
-                    return new Error(line,"&",Tag.ERROR_CARACTER_INESPERADO, Token.and);
+                    return new Error(line, "&", Tag.ERROR_CARACTER_INESPERADO, Token.and);
                 }
         }
 
@@ -247,7 +247,7 @@ public class Lexer {
             } while (Character.isDigit(ch));
             return new Num(value);
         }
-        
+
         //Identifiers
         if (Character.isLetter(ch)) {
             StringBuilder sb = new StringBuilder();
@@ -265,27 +265,27 @@ public class Lexer {
             words.put(s, w);
             return w;
         }
-        
+
         char aux = ch;
         ch = ' ';
         error++;
-        return new Error(line,""+aux,Tag.ERROR_CARACTER_INVALIDO, Token.INVALID);
-        
+        return new Error(line, "" + aux, Tag.ERROR_CARACTER_INVALIDO, Token.INVALID);
+
     }
-    
-    public void printTabelaSimbolos(){
+
+    public void printTabelaSimbolos() {
         System.out.println("\nTabela de Simbolos\n");
-        Object[] a=words.values().toArray();
+        Object[] a = words.values().toArray();
         for (Object a1 : a) {
-            System.out.println(a1); 
+            System.out.println(a1);
         }
     }
-    
-    public int howManyErrors(){
+
+    public int howManyErrors() {
         return error;
     }
-    
-    public int getLine(){
+
+    public int getLine() {
         return line;
     }
 }

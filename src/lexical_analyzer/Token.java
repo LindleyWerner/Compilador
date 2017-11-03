@@ -7,7 +7,7 @@ package lexical_analyzer;
 public class Token {
 
     protected final Tag tag; //constant that represents the token
-   
+
     public static final Token line_comment = new Token(Tag.LINE_COMMENT);
     public static final Token block_comment = new Token(Tag.BLOCK_COMMENT);
 
@@ -33,14 +33,14 @@ public class Token {
     public static final Token or = new Token(Tag.OR);
     public static final Token and = new Token(Tag.AND);
     public static final Token not = new Token(Tag.NOT);
-    
+
     public static final Token INVALID = new Token(Tag.ERROR_CARACTER_INVALIDO);
 
     public Token(Tag t) {
         tag = t;
     }
-    
-    public Tag getTag(){
+
+    public Tag getTag() {
         return this.tag;
     }
 
@@ -52,16 +52,16 @@ public class Token {
             return "<" + tag.name() + " (" + tag.getName() + ")>";
         }
     }
-    
-    public Token getSimulatedToken(){
+
+    public Token getSimulatedToken() {
         return Token.INVALID;
     }
-    
-    public int getErrorLine(){
+
+    public int getErrorLine() {
         return -1;
     }
-    
-    public String getLexeme(){
+
+    public String getLexeme() {
         return tag.getName();
     }
 }

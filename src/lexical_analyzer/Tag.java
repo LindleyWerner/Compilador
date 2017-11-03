@@ -17,7 +17,6 @@ public enum Tag {
     WHILE("while"),
     SCAN("scan"),
     PRINT("print"),
-    
     //comments
     LINE_COMMENT("//"),
     BLOCK_COMMENT("/**/"),
@@ -25,8 +24,8 @@ public enum Tag {
     //CLOSE_BLOCK_COMMENT("*/"),
 
     //simbols
-    OPEN_PAREN("("), 
-    CLOSE_PAREN(")"), 
+    OPEN_PAREN("("),
+    CLOSE_PAREN(")"),
     DOT_COMMA(";"),
     COMMA(","),
     ASSIGN("="),
@@ -35,37 +34,34 @@ public enum Tag {
 
     // Arithmetic  Operators
     PLUS("+"),
-    MINUS("-"), 
-    DIV("/"), 
+    MINUS("-"),
+    DIV("/"),
     MULT("*"),
-
     // Logitacal Operators
-    EQ("=="),             
-    GT(">"), 
-    GE(">="),             
-    LT("<"),            
-    LE("<="), 
+    EQ("=="),
+    GT(">"),
+    GE(">="),
+    LT("<"),
+    LE("<="),
     NE("!="),
-    OR("||"),            
-    AND("&&"),           
-    NOT("!"), 
-
+    OR("||"),
+    AND("&&"),
+    NOT("!"),
     //Another tokens
     TEXT("TEXT"),
     NUM("NUM"),
     ID("ID"),
-    EOF("$"),    
-    
+    EOF("$"),
     // errors tokens
     ERROR_CARACTER_INVALIDO,
     ERROR_CARACTER_INESPERADO;
 
-    private String name="";
-    
-    public String getName(){
+    private String name = "";
+
+    public String getName() {
         return name;
     }
-    
+
     private Tag(String name) {
         this.name = name;
     }
