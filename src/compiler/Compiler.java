@@ -11,16 +11,16 @@ import syntactic_parser.Syntatic;
  * @author Lindley and Nícolas
  */
 public class Compiler {
-    
+
     private final static boolean DEBUG = false;
-    
+
     public static void main(String[] args) {
         // TODO chamar tudo por aqui, ou não...
-        while(true){
+        while (true) {
             System.out.println("Digite o nome do arquivo a ser compilado: ");
-            Scanner input = new Scanner (System.in);
+            Scanner input = new Scanner(System.in);
             String fileName = input.nextLine();
-            fileName = "./codigosParaTeste/" + fileName;  
+            fileName = "./codigosParaTeste/" + fileName;
             Syntatic semantic;
             try {
                 semantic = new Syntatic(fileName, DEBUG);
@@ -28,7 +28,7 @@ public class Compiler {
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, "Arquivo não encontrado.", ex);
             }
-            
+
         }
-    }    
+    }
 }
