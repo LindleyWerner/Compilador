@@ -1,13 +1,10 @@
 package compiler;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import lexical_analyzer.Lexer;
-import syntactic_parser.Semantic;
-import lexical_analyzer.Token;
+import syntactic_parser.Syntatic;
 
 /**
  *
@@ -24,9 +21,9 @@ public class Compiler {
             Scanner input = new Scanner (System.in);
             String fileName = input.nextLine();
             fileName = "./codigosParaTeste/" + fileName;  
-            Semantic semantic;
+            Syntatic semantic;
             try {
-                semantic = new Semantic(fileName, DEBUG);
+                semantic = new Syntatic(fileName, DEBUG);
                 semantic.start();
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, "Arquivo não encontrado.", ex);
