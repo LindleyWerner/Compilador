@@ -12,7 +12,7 @@ import syntactic_parser.Syntatic;
  */
 public class Compiler {
 
-    private final static boolean DEBUG = false;
+    private final static boolean DEBUG = true;
 
     public static void main(String[] args) {
         // TODO chamar tudo por aqui, ou não...
@@ -21,10 +21,10 @@ public class Compiler {
             Scanner input = new Scanner(System.in);
             String fileName = input.nextLine();
             fileName = "./codigosParaTeste/" + fileName;
-            Syntatic semantic;
+            Syntatic syntatic;
             try {
-                semantic = new Syntatic(fileName, DEBUG);
-                semantic.start();
+                syntatic = new Syntatic(fileName, DEBUG);
+                syntatic.start();
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, "Arquivo não encontrado.", ex);
             }

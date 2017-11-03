@@ -48,7 +48,11 @@ public class Syntatic {
             if (debug) {
                 System.out.println(tok.getLexeme());
             }
-            if (!(tok.getTag().compareTo(Tag.EOF) == 0)) {
+            if(tok.getTag().compareTo(Tag.LINE_COMMENT) == 0
+                    || tok.getTag().compareTo(Tag.BLOCK_COMMENT) == 0){
+                advance();
+            }
+            else if (!(tok.getTag().compareTo(Tag.EOF) == 0)) {
                 if (tok.getTag().compareTo(Tag.ERROR_CARACTER_INESPERADO) == 0
                         || tok.getTag().compareTo(Tag.ERROR_CARACTER_INVALIDO) == 0) {
                     lexicalError();

@@ -14,7 +14,7 @@ program
  print("Disponibilidade Candidato: ");
  scan(disponibilidade);
 
- if ((pontuação > pontuacaoMinima) && (disponibilidade=="Sim")) then
+ if ((pontuação > pontuacaoMinima) && (disponibilidade=="Sim") then
  print("Candidato aprovado");
  else
  print("Candidato reprovado");
