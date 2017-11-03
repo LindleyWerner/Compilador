@@ -12,7 +12,7 @@ import syntactic_parser.Syntatic;
  */
 public class Compiler {
 
-    private final static boolean DEBUG = true;
+    private final static boolean DEBUG = false;
 
     public static void main(String[] args) {
         // TODO chamar tudo por aqui, ou não...

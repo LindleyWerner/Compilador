@@ -75,7 +75,7 @@ public class Syntatic {
     }
 
     private void error(String where) {
-        System.out.print("Erro semântico, linha: " + lexer.getLine() + ", esperado(s): ");
+        System.out.print("Erro sintático, linha: " + lexer.getLine() + ", esperado(s): ");
         error++;
         listTagEsperadas.forEach((tag) -> {
             System.out.print("'" + tag.getName() + "' ");
@@ -88,7 +88,7 @@ public class Syntatic {
     private void errorRecover(String where) {
         List<Tag> program = follow.getFollows(where);
         if (debug) {
-            System.out.println("Recuperando de erro semântico");
+            System.out.println("Recuperando de erro sintático");
         }
         advance();
         boolean isStopToken = false;
