@@ -6,14 +6,17 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lexical_analyzer.Lexer;
-import lexical_analyzer.Semantic;
+import syntactic_parser.Semantic;
 import lexical_analyzer.Token;
 
 /**
  *
  * @author Lindley and Nícolas
  */
-public class Compiler {    
+public class Compiler {
+    
+    private final static boolean DEBUG = false;
+    
     public static void main(String[] args) {
         // TODO chamar tudo por aqui, ou não...
         while(true){
@@ -23,7 +26,7 @@ public class Compiler {
             fileName = "./codigosParaTeste/" + fileName;  
             Semantic semantic;
             try {
-                semantic = new Semantic(fileName);
+                semantic = new Semantic(fileName, DEBUG);
                 semantic.start();
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, "Arquivo não encontrado.", ex);

@@ -51,9 +51,9 @@ public enum Tag {
     NOT("!"), 
 
     //Another tokens
-    NUM,
-    ID,
-    TEXT,
+    NUM("NUM"),
+    ID("ID"),
+    EOF("$"),
     
     // errors tokens
     ERROR_CARACTER_INVALIDO,

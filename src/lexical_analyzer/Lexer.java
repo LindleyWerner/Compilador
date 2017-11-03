@@ -11,13 +11,13 @@ import java.util.logging.Logger;
  */
 public class Lexer {
 
-    public static int line = 1; //line counter
-    public static int error = 0; //error counter
-    public static boolean eof = false;
-    private char ch = ' '; //read file character
+    public static int line; //line counter
+    public static int error; //error counter
+    public static boolean eof;
+    private char ch; //read file character
     private FileReader file;
     private List text;
-    private int contraladorText = 0;
+    private int controladorText;
 
     private Hashtable words = new Hashtable();
 
@@ -30,6 +30,12 @@ public class Lexer {
 
     //Constructor
     public Lexer(String fileName) throws FileNotFoundException {
+        line = 1;
+        error = 0;
+        eof = false;
+        ch = ' ';
+        controladorText = 0;
+        
         try {
             file = new FileReader(fileName);
         } catch (FileNotFoundException e) {
@@ -68,9 +74,9 @@ public class Lexer {
     //Reads next file character
     private void readch() throws IOException {
         int c;
-        if (contraladorText < text.size()) {
-            ch = Character.toChars((int) text.get(contraladorText))[0];
-            contraladorText++;
+        if (controladorText < text.size()) {
+            ch = Character.toChars((int) text.get(controladorText))[0];
+            controladorText++;
         } else {
             eof = true;
         }
@@ -80,7 +86,7 @@ public class Lexer {
     private boolean readch(char c) throws IOException {
         readch();
         if (ch != c) {
-            contraladorText--;
+            controladorText--;
             return false;
         }
         ch = ' ';
@@ -131,7 +137,7 @@ public class Lexer {
                         }else{
                             if(eof){
                                 error++;
-                                return new Error(startLine,"*/",Tag.ERROR_CARACTER_INESPERADO);
+                                return new Error(startLine,"*/",Tag.ERROR_CARACTER_INESPERADO, Token.block_comment);
                             }
                         }
                     }                    
@@ -169,11 +175,11 @@ public class Lexer {
                     lb.append(ch);                   
                     if(eof || ch == '\n'){
                         error++;
-                        return new Error(line,"\"",Tag.ERROR_CARACTER_INESPERADO);
+                        return new Error(line,"\"",Tag.ERROR_CARACTER_INESPERADO, new Word(lb.toString(),Tag.STRING));
                     }
                     readch();
                 }
-                Word s = new Word(lb.toString(),Tag.TEXT);
+                Word s = new Word(lb.toString(),Tag.STRING);
                 ch=' ';
                 return s;
         }
@@ -219,7 +225,7 @@ public class Lexer {
                 }else{
                     ch = ' ';
                     error++;
-                    return new Error(line,"|",Tag.ERROR_CARACTER_INESPERADO);
+                    return new Error(line,"|",Tag.ERROR_CARACTER_INESPERADO, Token.or);
                 }
             case '&':
                 if (readch('&')) {
@@ -228,7 +234,7 @@ public class Lexer {
                 }else{
                     ch = ' ';
                     error++;
-                    return new Error(line,"&",Tag.ERROR_CARACTER_INESPERADO);
+                    return new Error(line,"&",Tag.ERROR_CARACTER_INESPERADO, Token.and);
                 }
         }
 
@@ -263,19 +269,20 @@ public class Lexer {
         char aux = ch;
         ch = ' ';
         error++;
-        return new Error(line,""+aux,Tag.ERROR_CARACTER_INVALIDO);
+        return new Error(line,""+aux,Tag.ERROR_CARACTER_INVALIDO, Token.INVALID);
         
     }
     
     public void printTabelaSimbolos(){
         System.out.println("\nTabela de Simbolos\n");
         Object[] a=words.values().toArray();
-        for(int i=0;i<a.length;i++)
-            System.out.println(a[i]); 
+        for (Object a1 : a) {
+            System.out.println(a1); 
+        }
     }
     
-    public void howManyErrors(){
-        System.out.println("\n"+error+" erro(s) léxico(s)\n");
+    public int howManyErrors(){
+        return error;
     }
     
     public int getLine(){

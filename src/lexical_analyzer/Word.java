@@ -12,10 +12,12 @@ public class Word extends Token{
         lexeme = s;
     }
         
+    @Override
     public String toString(){
         return "<" + tag.name() + " (\"" + lexeme + "\")>";
     }
     
+    @Override
     public String getLexeme(){
         return lexeme;
     }

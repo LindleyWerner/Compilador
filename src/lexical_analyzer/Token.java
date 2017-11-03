@@ -33,9 +33,15 @@ public class Token {
     public static final Token or = new Token(Tag.OR);
     public static final Token and = new Token(Tag.AND);
     public static final Token not = new Token(Tag.NOT);
+    
+    public static final Token INVALID = new Token(Tag.ERROR_CARACTER_INVALIDO);
 
     public Token(Tag t) {
         tag = t;
+    }
+    
+    public Tag getTag(){
+        return this.tag;
     }
 
     @Override
@@ -46,5 +52,16 @@ public class Token {
             return "<" + tag.name() + " (" + tag.getName() + ")>";
         }
     }
-
+    
+    public Token getSimulatedToken(){
+        return Token.INVALID;
+    }
+    
+    public int getErrorLine(){
+        return -1;
+    }
+    
+    public String getLexeme(){
+        return tag.getName();
+    }
 }
