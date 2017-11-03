@@ -44,7 +44,7 @@ public class Syntatic {
     private void advance() {
         try {
             tok = lexer.scan();
-            if(tok == null){
+            if(tok.getTag().compareTo(Tag.EOF) == 0){
                 System.out.println("Fim da análise. " + lexer.howManyErrors() + " erro(s) léxico(s) e " + error + " erro(s) sintático(s)\n\n");
             }else{
                 if(debug) System.out.println(tok.getLexeme());
