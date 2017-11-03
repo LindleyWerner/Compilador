@@ -1,4 +1,5 @@
 program
+
  int pontuacao, pontuacaoMaxima, disponibilidade;
  string pontuacaoMinima;
 
