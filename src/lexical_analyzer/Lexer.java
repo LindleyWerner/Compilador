@@ -277,4 +277,8 @@ public class Lexer {
     public void howManyErrors(){
         System.out.println("\n"+error+" erro(s) léxico(s)\n");
     }
+    
+    public int getLine(){
+        return line;
+    }
 }
