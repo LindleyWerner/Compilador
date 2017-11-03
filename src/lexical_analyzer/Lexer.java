@@ -175,7 +175,7 @@ public class Lexer {
                     lb.append(ch);                   
                     if(eof || ch == '\n'){
                         error++;
-                        return new Error(line,"\"",Tag.ERROR_CARACTER_INESPERADO, new Word(lb.toString(),Tag.STRING));
+                        return new Error(line,"\"",Tag.ERROR_CARACTER_INESPERADO, new Word(lb.toString(),Tag.TEXT));
                     }
                     readch();
                 }

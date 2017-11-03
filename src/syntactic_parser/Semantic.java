@@ -321,7 +321,7 @@ public class Semantic {
             listTagEsperadas.add(Tag.OPEN_PAREN);
             listTagEsperadas.add(Tag.ID);
             listTagEsperadas.add(Tag.NUM);
-            listTagEsperadas.add(Tag.STRING);
+            listTagEsperadas.add(Tag.TEXT);
             error("condition");
         }
         return true;
@@ -393,10 +393,10 @@ public class Semantic {
                 || tok.getTag().compareTo(Tag.OPEN_PAREN) == 0
                 || tok.getTag().compareTo(Tag.ID) == 0
                 || tok.getTag().compareTo(Tag.NUM) == 0
-                || tok.getTag().compareTo(Tag.STRING) == 0) {
+                || tok.getTag().compareTo(Tag.TEXT) == 0) {
             simpleExpr();
         }//writable ::= literal 
-        else if (tok.getTag().compareTo(Tag.STRING) == 0) {
+        else if (tok.getTag().compareTo(Tag.TEXT) == 0) {
             literal();
         }
         else {
@@ -405,7 +405,7 @@ public class Semantic {
             listTagEsperadas.add(Tag.OPEN_PAREN);
             listTagEsperadas.add(Tag.ID);
             listTagEsperadas.add(Tag.NUM);
-            listTagEsperadas.add(Tag.STRING);
+            listTagEsperadas.add(Tag.TEXT);
             error("writable");
         }
         return true;
@@ -419,7 +419,7 @@ public class Semantic {
                 || tok.getTag().compareTo(Tag.OPEN_PAREN) == 0
                 || tok.getTag().compareTo(Tag.ID) == 0
                 || tok.getTag().compareTo(Tag.NUM) == 0
-                || tok.getTag().compareTo(Tag.STRING) == 0) {
+                || tok.getTag().compareTo(Tag.TEXT) == 0) {
             simpleExpr();
             expressionPrime();
         } else {
@@ -428,7 +428,7 @@ public class Semantic {
             listTagEsperadas.add(Tag.OPEN_PAREN);
             listTagEsperadas.add(Tag.ID);
             listTagEsperadas.add(Tag.NUM);
-            listTagEsperadas.add(Tag.STRING);
+            listTagEsperadas.add(Tag.TEXT);
             error("expression");
         }
         return true;
@@ -469,7 +469,7 @@ public class Semantic {
                 || tok.getTag().compareTo(Tag.OPEN_PAREN) == 0
                 || tok.getTag().compareTo(Tag.ID) == 0
                 || tok.getTag().compareTo(Tag.NUM) == 0
-                || tok.getTag().compareTo(Tag.STRING) == 0) {
+                || tok.getTag().compareTo(Tag.TEXT) == 0) {
             term();
             simpleExprPrime();
         } else {
@@ -478,7 +478,7 @@ public class Semantic {
             listTagEsperadas.add(Tag.OPEN_PAREN);
             listTagEsperadas.add(Tag.ID);
             listTagEsperadas.add(Tag.NUM);
-            listTagEsperadas.add(Tag.STRING);
+            listTagEsperadas.add(Tag.TEXT);
             error("simpleExpr");
         }
         return true;
@@ -521,7 +521,7 @@ public class Semantic {
                 || tok.getTag().compareTo(Tag.OPEN_PAREN) == 0
                 || tok.getTag().compareTo(Tag.ID) == 0
                 || tok.getTag().compareTo(Tag.NUM) == 0
-                || tok.getTag().compareTo(Tag.STRING) == 0) {
+                || tok.getTag().compareTo(Tag.TEXT) == 0) {
             factorA();
             termPrime();
         }else{
@@ -530,7 +530,7 @@ public class Semantic {
             listTagEsperadas.add(Tag.OPEN_PAREN);
             listTagEsperadas.add(Tag.ID);
             listTagEsperadas.add(Tag.NUM);
-            listTagEsperadas.add(Tag.STRING);
+            listTagEsperadas.add(Tag.TEXT);
             error("term");
         }
         return true;
@@ -574,7 +574,7 @@ public class Semantic {
         if (tok.getTag().compareTo(Tag.OPEN_PAREN) == 0
                 || tok.getTag().compareTo(Tag.ID) == 0
                 || tok.getTag().compareTo(Tag.NUM) == 0
-                || tok.getTag().compareTo(Tag.STRING) == 0) {
+                || tok.getTag().compareTo(Tag.TEXT) == 0) {
             factor();
         }//factor-a ::= ! factor
         else if(tok.getTag().compareTo(Tag.NOT) == 0){
@@ -588,7 +588,7 @@ public class Semantic {
             listTagEsperadas.add(Tag.OPEN_PAREN);
             listTagEsperadas.add(Tag.ID);
             listTagEsperadas.add(Tag.NUM);
-            listTagEsperadas.add(Tag.STRING);
+            listTagEsperadas.add(Tag.TEXT);
             listTagEsperadas.add(Tag.NOT);
             listTagEsperadas.add(Tag.MINUS);
             error("factorA");
@@ -603,7 +603,7 @@ public class Semantic {
             identifier();
         }//factor ::= constant
         else if(tok.getTag().compareTo(Tag.NUM) == 0
-                    || tok.getTag().compareTo(Tag.STRING) == 0){
+                    || tok.getTag().compareTo(Tag.TEXT) == 0){
             constant();
         }//factor ::= "(" expression ")"
         else if(tok.getTag().compareTo(Tag.OPEN_PAREN) == 0){
@@ -613,7 +613,7 @@ public class Semantic {
         }else{            
             listTagEsperadas.add(Tag.ID);
             listTagEsperadas.add(Tag.NUM);
-            listTagEsperadas.add(Tag.STRING);
+            listTagEsperadas.add(Tag.TEXT);
             listTagEsperadas.add(Tag.OPEN_PAREN);
             error("factor");
         }
@@ -698,12 +698,12 @@ public class Semantic {
         if(tok.getTag().compareTo(Tag.NUM) == 0){
             integerConst();
         }//constant ::= literal 
-        else if(tok.getTag().compareTo(Tag.STRING) == 0){
+        else if(tok.getTag().compareTo(Tag.TEXT) == 0){
             literal();
-            if(!eat(Tag.STRING, "constant")) return false; // TODO não é assim que faz, ler da tabela?
+            if(!eat(Tag.TEXT, "constant")) return false; // TODO não é assim que faz, ler da tabela?
         }else{
             listTagEsperadas.add(Tag.NUM);
-            listTagEsperadas.add(Tag.STRING);
+            listTagEsperadas.add(Tag.TEXT);
             error("constant");
         }
         return true;
@@ -724,10 +724,10 @@ public class Semantic {
     private boolean literal() {
         if(debug) System.out.println("> literal");
         // literal ::= " “" {caractere} "”" 
-        if(tok.getTag().compareTo(Tag.STRING) == 0){            
-            if(!eat(Tag.STRING, "literal")) return false; // TODO não é assim que faz, ler da tabela?
+        if(tok.getTag().compareTo(Tag.TEXT) == 0){            
+            if(!eat(Tag.TEXT, "literal")) return false; // TODO não é assim que faz, ler da tabela?
         }else{
-            listTagEsperadas.add(Tag.STRING);
+            listTagEsperadas.add(Tag.TEXT);
             error("literal");
         }
         return true;
