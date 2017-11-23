@@ -26,7 +26,8 @@ public class Compiler {
                 syntatic = new Syntatic(fileName, DEBUG);
                 syntatic.start();
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, "Arquivo não encontrado.", ex);
+                //Nada a fazer, mensagem de erro já foi escrita
+                //Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, "Arquivo não encontrado.", ex);
             }
 
         }
