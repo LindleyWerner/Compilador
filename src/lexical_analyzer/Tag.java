@@ -54,7 +54,11 @@ public enum Tag {
     EOF("$"),
     // errors tokens
     ERROR_CARACTER_INVALIDO,
-    ERROR_CARACTER_INESPERADO;
+    ERROR_CARACTER_INESPERADO,
+    
+    //semantic tags
+    ERROR,
+    VOID;
 
     private String name = "";
 

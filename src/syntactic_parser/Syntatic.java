@@ -8,12 +8,15 @@ package syntactic_parser;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lexical_analyzer.Lexer;
 import lexical_analyzer.Tag;
 import lexical_analyzer.Token;
+import semantic_parser.Node;
+import semantic_parser.SymbolTableObject;
 
 /**
  *
@@ -26,20 +29,21 @@ public class Syntatic {
     private final List<Tag> listTagEsperadas;
     private final boolean debug;
     private final FollowTable follow;
-    private int error;
+    private int error, semanticError;
 
     public Syntatic(String fileName, boolean debug) throws FileNotFoundException {
         lexer = new Lexer(fileName);
         listTagEsperadas = new ArrayList<>();
         follow = new FollowTable();
         error = 0;
+        semanticError = 0;
         this.debug = debug;
     }
 
     public void start() {
         advance();
         program();
-        System.out.println("\nFim da análise. " + lexer.howManyErrors() + " erro(s) léxico(s) e " + error + " erro(s) sintático(s)\n");
+        System.out.println("\nFim da análise. " + lexer.howManyErrors() + " erro(s) léxico(s), " + error + " erro(s) sintático(s) e " + semanticError + " erro(s) semânticos\n");
     }
 
     private void advance() {
@@ -126,14 +130,27 @@ public class Syntatic {
             advance();
         }
     }
+    
+    private void semanticError(Tag expected, Tag received){
+        semanticError ++;
+        System.out.println("Erro semântico, linha: " + tok.getErrorLine()
+                    + ", experado: " + expected.toString() + " recebido: " + received.toString());
+    }
+    
+    private void semanticError2(String lexeme){
+        semanticError ++;
+        System.out.println("Erro semântico, linha: " + tok.getErrorLine()
+                    + ", variável " + lexeme + " duplicada");
+    }
 
     //program ::= program [decl-list] stmt-list end
-    private boolean program() {
+    private Node program() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> program");
         }
         if (!eat(Tag.PROGRAM, "program")) {
-            return false;
+            return node;
         }
         if (tok.getTag().compareTo(Tag.INT) == 0
                 || tok.getTag().compareTo(Tag.STRING) == 0) {
@@ -141,13 +158,14 @@ public class Syntatic {
         }
         stmtList();
         if (!eat(Tag.END, "program")) {
-            return false;
+            return node;
         }
-        return true;
+        return node;
     }
 
     //decl-list ::= decl {decl}
-    private boolean declList() {
+    private Node declList() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> decList");
         }
@@ -162,73 +180,79 @@ public class Syntatic {
             listTagEsperadas.add(Tag.STRING);
             error("declList");
         }
-        return true;
+        return node;
     }
 
     //decl ::= type ident-list ";"
-    private boolean decl() {
+    private Node decl() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> decl");
         }
         if (tok.getTag().compareTo(Tag.INT) == 0
                 || tok.getTag().compareTo(Tag.STRING) == 0) {
-            type();
-            identList();
+            node.type = type().type;
+            identList(node.type);
             if (!eat(Tag.DOT_COMMA, "decl")) {
-                return false;
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.INT);
             listTagEsperadas.add(Tag.STRING);
             error("decl");
         }
-        return true;
+        return node;
     }
 
-    private boolean identList() {
+    private Node identList(Tag type) {
+        Node node = new Node();
         if (debug) {
             System.out.println("> identList");
         }
         //ident-list ::= identifier {"," identifier}
         if (tok.getTag().compareTo(Tag.ID) == 0) {
-            identifier();
+            identifier(type);
             while (tok.getTag().compareTo(Tag.COMMA) == 0) {
                 if (!eat(Tag.COMMA, "identList")) {
-                    return false;
+                    return node;
                 }
-                identifier();
+                identifier(type);
             }
         } else {
             listTagEsperadas.add(Tag.ID);
             error("identList");
         }
-        return true;
+        return node;
     }
 
-    private boolean type() {
+    private Node type() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> type");
         }
         //type ::= int
-        if (tok.getTag().compareTo(Tag.INT) == 0) {
+        if (tok.getTag().compareTo(Tag.INT) == 0) {            
             if (!eat(Tag.INT, "type")) {
-                return false;
+                return node;
             }
+            node.type = Tag.INT;
             // type ::= string
-        } else if (tok.getTag().compareTo(Tag.STRING) == 0) {
+        } else if (tok.getTag().compareTo(Tag.STRING) == 0) {            
             if (!eat(Tag.STRING, "type")) {
-                return false;
+                return node;
             }
+            node.type = Tag.STRING;
         } else {
             listTagEsperadas.add(Tag.INT);
             listTagEsperadas.add(Tag.STRING);
             error("type");
         }
-        return true;
+        return node;
     }
 
     // stmt-list ::= stmt {stmt}
-    private boolean stmtList() {
+    private Node stmtList() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> stmtList");
         }
@@ -252,10 +276,11 @@ public class Syntatic {
             listTagEsperadas.add(Tag.PRINT);
             error("stmtList");
         }
-        return true;
+        return node;
     }
 
-    private boolean stmt() {
+    private Node stmt() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> stmt");
         }
@@ -263,7 +288,7 @@ public class Syntatic {
         if (tok.getTag().compareTo(Tag.ID) == 0) {
             assingStmt();
             if (!eat(Tag.DOT_COMMA, "stmt")) {
-                return false;
+                return node;
             }
         } // stmt ::= if-stmt
         else if (tok.getTag().compareTo(Tag.IF) == 0) {
@@ -275,13 +300,13 @@ public class Syntatic {
         else if (tok.getTag().compareTo(Tag.SCAN) == 0) {
             readStmt();
             if (!eat(Tag.DOT_COMMA, "stmt")) {
-                return false;
+                return node;
             }
         } //stmt ::= write-stmt ";"
         else if (tok.getTag().compareTo(Tag.PRINT) == 0) {
             writeStmt();
             if (!eat(Tag.DOT_COMMA, "stmt")) {
-                return false;
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.ID);
@@ -291,39 +316,46 @@ public class Syntatic {
             listTagEsperadas.add(Tag.PRINT);
             error("stmt");
         }
-        return true;
+        return node;
     }
 
-    private boolean assingStmt() {
+    private Node assingStmt() {
+        Node node = new Node();
+        Tag aux;
         if (debug) {
             System.out.println("> assingStmt");
         }
         //assign-stmt ::= identifier "=" simple_expr
         if (tok.getTag().compareTo(Tag.ID) == 0) {
-            identifier();
+            node.type = identifier(Tag.VOID).type;
             if (!eat(Tag.ASSIGN, "assingStmt")) {
-                return false;
+                return node;
             }
-            simpleExpr();
+            aux = simpleExpr().type;
+            if(aux != node.type){
+                semanticError(node.type, aux);
+                node.type = Tag.ERROR;                
+            }
         } else {
             listTagEsperadas.add(Tag.ID);
             error("assingStmt");
         }
-        return true;
+        return node;
     }
 
-    private boolean ifStmt() {
+    private Node ifStmt() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> ifStmt");
         }
         //if-stmt ::= if condition then stmt-list if-stmt’
         if (tok.getTag().compareTo(Tag.IF) == 0) {
             if (!eat(Tag.IF, "ifStmt")) {
-                return false;
+                return node;
             }
             condition();
             if (!eat(Tag.THEN, "ifStmt")) {
-                return false;
+                return node;
             }
             stmtList();
             ifStmtPrime();
@@ -331,36 +363,38 @@ public class Syntatic {
             listTagEsperadas.add(Tag.IF);
             error("ifStmt");
         }
-        return true;
+        return node;
     }
 
-    private boolean ifStmtPrime() {
+    private Node ifStmtPrime() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> ifStmtPrime");
         }
         //if-stmt’ ::= end
         if (tok.getTag().compareTo(Tag.END) == 0) {
             if (!eat(Tag.END, "ifStmtPrime")) {
-                return false;
+                return node;
             }
         }//if-stmt’ ::= else stmt-list end
         else if (tok.getTag().compareTo(Tag.ELSE) == 0) {
             if (!eat(Tag.ELSE, "ifStmtPrime")) {
-                return false;
+                return node;
             }
             stmtList();
             if (!eat(Tag.END, "ifStmtPrime")) {
-                return false;
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.END);
             listTagEsperadas.add(Tag.ELSE);
             error("ifStmtPrime");
         }
-        return true;
+        return node;
     }
 
-    private boolean condition() {
+    private Node condition() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> condition");
         }
@@ -381,17 +415,18 @@ public class Syntatic {
             listTagEsperadas.add(Tag.TEXT);
             error("condition");
         }
-        return true;
+        return node;
     }
 
-    private boolean whileStmt() {
+    private Node whileStmt() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> whileStmt");
         }
         //while-stmt ::= do stmt-list stmt-sufix
         if (tok.getTag().compareTo(Tag.DO) == 0) {
             if (!eat(Tag.DO, "whileStmt")) {
-                return false;
+                return node;
             }
             stmtList();
             stmtSufix();
@@ -399,76 +434,80 @@ public class Syntatic {
             listTagEsperadas.add(Tag.DO);
             error("whileStmt");
         }
-        return true;
+        return node;
     }
 
-    private boolean stmtSufix() {
+    private Node stmtSufix() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> stmtSufix");
         }
         //   stmt-sufix ::= while condition end  
         if (tok.getTag().compareTo(Tag.WHILE) == 0) {
             if (!eat(Tag.WHILE, "stmtSufix")) {
-                return false;
+                return node;
             }
             condition();
             if (!eat(Tag.END, "stmtSufix")) {
-                return false;
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.WHILE);
             error("stmtSufix");
         }
-        return true;
+        return node;
     }
 
-    private boolean readStmt() {
+    private Node readStmt() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> readStmt");
         }
         //read-stmt ::= scan "(" identifier ")"
         if (tok.getTag().compareTo(Tag.SCAN) == 0) {
             if (!eat(Tag.SCAN, "readStmt")) {
-                return false;
+                return node;
             }
             if (!eat(Tag.OPEN_PAREN, "readStmt")) {
-                return false;
+                return node;
             }
-            identifier();
+            node.type = identifier(Tag.VOID).type;
             if (!eat(Tag.CLOSE_PAREN, "readStmt")) {
-                return false;
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.SCAN);
             error("readStmt");
         }
-        return true;
+        return node;
     }
 
-    private boolean writeStmt() {
+    private Node writeStmt() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> writeStmt");
         }
         //write-stmt ::= print "(" writable ")"
         if (tok.getTag().compareTo(Tag.PRINT) == 0) {
             if (!eat(Tag.PRINT, "writeStmt")) {
-                return false;
+                return node;
             }
             if (!eat(Tag.OPEN_PAREN, "writeStmt")) {
-                return false;
+                return node;
             }
-            writable();
+            node.type = writable().type;
             if (!eat(Tag.CLOSE_PAREN, "writeStmt")) {
-                return false;
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.PRINT);
             error("writeStmt");
         }
-        return true;
+        return node;
     }
 
-    private boolean writable() {
+    private Node writable() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> writable");
         }
@@ -479,10 +518,10 @@ public class Syntatic {
                 || tok.getTag().compareTo(Tag.ID) == 0
                 || tok.getTag().compareTo(Tag.NUM) == 0
                 || tok.getTag().compareTo(Tag.TEXT) == 0) {
-            simpleExpr();
+            node.type = simpleExpr().type;
         }//writable ::= literal 
         else if (tok.getTag().compareTo(Tag.TEXT) == 0) {
-            literal();
+            node.type = literal().type;
         } else {
             listTagEsperadas.add(Tag.NOT);
             listTagEsperadas.add(Tag.MINUS);
@@ -492,10 +531,11 @@ public class Syntatic {
             listTagEsperadas.add(Tag.TEXT);
             error("writable");
         }
-        return true;
+        return node;
     }
 
-    private boolean expression() {
+    private Node expression() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> expression");
         }
@@ -506,8 +546,8 @@ public class Syntatic {
                 || tok.getTag().compareTo(Tag.ID) == 0
                 || tok.getTag().compareTo(Tag.NUM) == 0
                 || tok.getTag().compareTo(Tag.TEXT) == 0) {
-            simpleExpr();
-            expressionPrime();
+            node.type = simpleExpr().type;
+            expressionPrime(node.type);
         } else {
             listTagEsperadas.add(Tag.NOT);
             listTagEsperadas.add(Tag.MINUS);
@@ -517,10 +557,11 @@ public class Syntatic {
             listTagEsperadas.add(Tag.TEXT);
             error("expression");
         }
-        return true;
+        return node;
     }
 
-    private boolean expressionPrime() {
+    private Node expressionPrime(Tag type) {
+        Node node = new Node();
         if (debug) {
             System.out.println("> expressionPrime");
         }
@@ -536,7 +577,11 @@ public class Syntatic {
                 || tok.getTag().compareTo(Tag.LE) == 0
                 || tok.getTag().compareTo(Tag.NE) == 0) {
             relop();
-            simpleExpr();
+            node.type = simpleExpr().type;
+            if(node.type != type){
+                semanticError(type, node.type);
+                node.type = Tag.ERROR;                
+            }
         } else {
             listTagEsperadas.add(Tag.EQ);
             listTagEsperadas.add(Tag.GT);
@@ -546,10 +591,11 @@ public class Syntatic {
             listTagEsperadas.add(Tag.NE);
             error("expressionPrime");
         }
-        return true;
+        return node;
     }
 
-    private boolean simpleExpr() {
+    private Node simpleExpr() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> simpleExpr");
         }
@@ -560,8 +606,8 @@ public class Syntatic {
                 || tok.getTag().compareTo(Tag.ID) == 0
                 || tok.getTag().compareTo(Tag.NUM) == 0
                 || tok.getTag().compareTo(Tag.TEXT) == 0) {
-            term();
-            simpleExprPrime();
+            node.type = term().type;
+            simpleExprPrime(node.type);
         } else {
             listTagEsperadas.add(Tag.NOT);
             listTagEsperadas.add(Tag.MINUS);
@@ -571,10 +617,11 @@ public class Syntatic {
             listTagEsperadas.add(Tag.TEXT);
             error("simpleExpr");
         }
-        return true;
+        return node;
     }
 
-    private boolean simpleExprPrime() {
+    private Node simpleExprPrime(Tag type) {
+        Node node = new Node();
         if (debug) {
             System.out.println("> simpleExprPrime");
         }
@@ -594,18 +641,23 @@ public class Syntatic {
                 || tok.getTag().compareTo(Tag.MINUS) == 0
                 || tok.getTag().compareTo(Tag.OR) == 0) {
             addop();
-            term();
-            simpleExprPrime();
+            node.type = term().type;
+            if (node.type != type){
+                semanticError(type, node.type);
+                node.type = Tag.ERROR;
+            }
+            simpleExprPrime(node.type);
         } else {
             listTagEsperadas.add(Tag.PLUS);
             listTagEsperadas.add(Tag.MINUS);
             listTagEsperadas.add(Tag.OR);
             error("simpleExprPrime");
         }
-        return true;
+        return node;
     }
 
-    private boolean term() {
+    private Node term() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> term");
         }
@@ -616,7 +668,11 @@ public class Syntatic {
                 || tok.getTag().compareTo(Tag.ID) == 0
                 || tok.getTag().compareTo(Tag.NUM) == 0
                 || tok.getTag().compareTo(Tag.TEXT) == 0) {
-            factorA();
+            node.type = factorA().type;
+            if (node.type != Tag.INT){
+                semanticError(Tag.INT, node.type);
+                node.type = Tag.ERROR;                
+            }
             termPrime();
         } else {
             listTagEsperadas.add(Tag.NOT);
@@ -627,10 +683,12 @@ public class Syntatic {
             listTagEsperadas.add(Tag.TEXT);
             error("term");
         }
-        return true;
+        return node;
     }
 
-    private boolean termPrime() {
+    private Node termPrime() {
+        Node node = new Node();
+        Tag aux;
         if (debug) {
             System.out.println("> termPrime");
         }
@@ -653,7 +711,11 @@ public class Syntatic {
                 || tok.getTag().compareTo(Tag.DIV) == 0
                 || tok.getTag().compareTo(Tag.AND) == 0) {
             mulop();
-            factorA();
+            aux = factorA().type;
+            if (aux != Tag.INT){
+                semanticError(Tag.INT, aux);
+                node.type = Tag.ERROR;                
+            }
             termPrime();
         } else {
             listTagEsperadas.add(Tag.MULT);
@@ -661,10 +723,11 @@ public class Syntatic {
             listTagEsperadas.add(Tag.AND);
             error("termPrime");
         }
-        return true;
+        return node;
     }
 
-    private boolean factorA() {
+    private Node factorA() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> factorA");
         }
@@ -673,19 +736,19 @@ public class Syntatic {
                 || tok.getTag().compareTo(Tag.ID) == 0
                 || tok.getTag().compareTo(Tag.NUM) == 0
                 || tok.getTag().compareTo(Tag.TEXT) == 0) {
-            factor();
+            node.type = factor().type;
         }//factor-a ::= ! factor
         else if (tok.getTag().compareTo(Tag.NOT) == 0) {
             if (!eat(Tag.NOT, "factorA")) {
-                return false;
+                return node;
             }
-            factor();
+            node.type = factor().type;
         }//factor-a ::= "-" factor
         else if (tok.getTag().compareTo(Tag.MINUS) == 0) {
             if (!eat(Tag.MINUS, "factorA")) {
-                return false;
+                return node;
             }
-            factor();
+            node.type = factor().type;
         } else {
             listTagEsperadas.add(Tag.OPEN_PAREN);
             listTagEsperadas.add(Tag.ID);
@@ -695,28 +758,29 @@ public class Syntatic {
             listTagEsperadas.add(Tag.MINUS);
             error("factorA");
         }
-        return true;
+        return node;
     }
 
-    private boolean factor() {
+    private Node factor() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> factor");
         }
         //factor ::= identifier
         if (tok.getTag().compareTo(Tag.ID) == 0) {
-            identifier();
+            node.type = identifier(Tag.VOID).type;
         }//factor ::= constant
         else if (tok.getTag().compareTo(Tag.NUM) == 0
                 || tok.getTag().compareTo(Tag.TEXT) == 0) {
-            constant();
+            node.type = constant().type;
         }//factor ::= "(" expression ")"
         else if (tok.getTag().compareTo(Tag.OPEN_PAREN) == 0) {
             if (!eat(Tag.OPEN_PAREN, "factor")) {
-                return false;
+                return node;
             }
-            expression();
+            node.type = expression().type;
             if (!eat(Tag.CLOSE_PAREN, "factor")) {
-                return false;
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.ID);
@@ -725,42 +789,43 @@ public class Syntatic {
             listTagEsperadas.add(Tag.OPEN_PAREN);
             error("factor");
         }
-        return true;
+        return node;
     }
 
-    private boolean relop() {
+    private Node relop() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> relop");
         }
         //relop ::= "=="
         if (tok.getTag().compareTo(Tag.EQ) == 0) {
             if (!eat(Tag.EQ, "relop")) {
-                return false;
+                return node;
             }
         }//relop ::= ">"
         else if (tok.getTag().compareTo(Tag.GT) == 0) {
             if (!eat(Tag.GT, "relop")) {
-                return false;
+                return node;
             }
         }//relop ::= ">="
         else if (tok.getTag().compareTo(Tag.GE) == 0) {
             if (!eat(Tag.GE, "relop")) {
-                return false;
+                return node;
             }
         }//relop ::= "<"
         else if (tok.getTag().compareTo(Tag.LT) == 0) {
             if (!eat(Tag.LT, "relop")) {
-                return false;
+                return node;
             }
         }//relop ::= "<="
         else if (tok.getTag().compareTo(Tag.LE) == 0) {
             if (!eat(Tag.LE, "relop")) {
-                return false;
+                return node;
             }
         }//relop ::= "!="
         else if (tok.getTag().compareTo(Tag.NOT) == 0) {
             if (!eat(Tag.NE, "relop")) {
-                return false;
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.EQ);
@@ -771,27 +836,28 @@ public class Syntatic {
             listTagEsperadas.add(Tag.NE);
             error("relop");
         }
-        return true;
+        return node;
     }
 
-    private boolean addop() {
+    private Node addop() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> addop");
         }
         //addop ::= "+"
         if (tok.getTag().compareTo(Tag.PLUS) == 0) {
             if (!eat(Tag.PLUS, "addop")) {
-                return false;
+                return node;
             }
         }//addop ::= "-"
         else if (tok.getTag().compareTo(Tag.MINUS) == 0) {
             if (!eat(Tag.MINUS, "addop")) {
-                return false;
+                return node;
             }
         }//addop ::= "||"
         else if (tok.getTag().compareTo(Tag.OR) == 0) {
             if (!eat(Tag.OR, "addop")) {
-                return false;
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.PLUS);
@@ -799,27 +865,28 @@ public class Syntatic {
             listTagEsperadas.add(Tag.OR);
             error("addop");
         }
-        return true;
+        return node;
     }
 
-    private boolean mulop() {
+    private Node mulop() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> mulop");
         }
         //mulop ::= "*"
         if (tok.getTag().compareTo(Tag.MULT) == 0) {
             if (!eat(Tag.MULT, "mulop")) {
-                return false;
+                return node;
             }
         }//mulop ::= "/"
         else if (tok.getTag().compareTo(Tag.DIV) == 0) {
             if (!eat(Tag.DIV, "mulop")) {
-                return false;
+                return node;
             }
         }//mulop ::= "&&"
         else if (tok.getTag().compareTo(Tag.AND) == 0) {
             if (!eat(Tag.AND, "mulop")) {
-                return false;
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.MULT);
@@ -827,72 +894,100 @@ public class Syntatic {
             listTagEsperadas.add(Tag.AND);
             error("mulop");
         }
-        return true;
+        return node;
     }
 
-    private boolean constant() {
+    private Node constant() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> constant");
         }
         //constant ::= integer_const
         if (tok.getTag().compareTo(Tag.NUM) == 0) {
-            integerConst();
+            node.type = integerConst().type;
         }//constant ::= literal 
         else if (tok.getTag().compareTo(Tag.TEXT) == 0) {
-            literal();
+            node.type = literal().type;
         } else {
             listTagEsperadas.add(Tag.NUM);
             listTagEsperadas.add(Tag.TEXT);
             error("constant");
         }
-        return true;
+        return node;
     }
 
-    private boolean integerConst() {
+    private Node integerConst() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> integerConst");
         }
         //integer_const ::= digit {digit} 
         if (tok.getTag().compareTo(Tag.NUM) == 0) {
-            if (!eat(Tag.NUM, "integerConst")) {
-                return false; // TODO não é assim que faz, ler da tabela?
+            if (!eat(Tag.NUM, "integerConst")) {                
+                return node;
             }
         } else {
             listTagEsperadas.add(Tag.NUM);
             error("integerConst");
         }
-        return true;
+        node.setType(Tag.INT);
+        return node;
     }
 
-    private boolean literal() {
+    private Node literal() {
+        Node node = new Node();
         if (debug) {
             System.out.println("> literal");
         }
         // literal ::= " “" {caractere} "”" 
         if (tok.getTag().compareTo(Tag.TEXT) == 0) {
-            if (!eat(Tag.TEXT, "literal")) {
-                return false; // TODO não é assim que faz, ler da tabela?
+            if (!eat(Tag.TEXT, "literal")) {                
+                return node;
             }
+            node.setType(Tag.STRING);
         } else {
             listTagEsperadas.add(Tag.TEXT);
             error("literal");
-        }
-        return true;
+        }         
+        return node;
     }
 
-    private boolean identifier() {
+    private Node identifier(Tag type) {
+        Node node = new Node();
+        Hashtable symbolTable;
+        SymbolTableObject obj;
+        
         if (debug) {
             System.out.println("> identifier");
         }
         // identifier ::= letter {letter | digit }
         if (tok.getTag().compareTo(Tag.ID) == 0) {
             if (!eat(Tag.ID, "identifier")) {
-                return false; // TODO não é assim que faz, ler da tabela?
+                return node;
+            }
+            //Pega o tipo da tabela de símbolos
+            symbolTable = lexer.getSymbolTable();
+            obj = (SymbolTableObject) symbolTable.get(tok.getLexeme());
+            if (obj != null) {
+                if (type == Tag.VOID){
+                    node.type = obj.getType();
+                }else{
+                    node.type = type;
+                    if(obj.getType() != Tag.VOID){
+                        System.out.println("Erro em syntatic, linha 977, deveria ser void");
+                        semanticError2(obj.getWord().getLexeme());
+                    }else{
+                        obj.setType(type);
+                        lexer.setSymbolTable(symbolTable);
+                    }                    
+                }
+            }else{
+                System.out.println("Erro em syntatic, linha 985");
             }
         } else {
             listTagEsperadas.add(Tag.ID);
             error("identifier");
         }
-        return true;
+        return node;
     }
 }

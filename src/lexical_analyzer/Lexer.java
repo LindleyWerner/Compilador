@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import semantic_parser.SymbolTableObject;
 
 /**
  *
@@ -24,7 +25,8 @@ public class Lexer {
     //Method to insert reserved words in hashtable
     private void reserve(Word w) {
         // TODO Ver se está correto
-        words.put(w.getLexeme(), w); //lexeme is the key to entry into the hashtable
+        SymbolTableObject obj = new SymbolTableObject(w, Tag.VOID);
+        words.put(w.getLexeme(), obj); //lexeme is the key to entry into the hashtable
 
     }
 
@@ -257,12 +259,15 @@ public class Lexer {
             } while (Character.isLetterOrDigit(ch));
 
             String s = sb.toString();
-            Word w = (Word) words.get(s);
-            if (w != null) {
+            SymbolTableObject obj1 = (SymbolTableObject) words.get(s);
+            Word w;
+            if (obj1 != null) {
+                w = obj1.getWord();
                 return w; //word already exists in hashtable
             }
             w = new Word(s, Tag.ID);
-            words.put(s, w);
+            SymbolTableObject obj = new SymbolTableObject(w, Tag.VOID);
+            words.put(s, obj);
             return w;
         }
 
@@ -287,5 +292,13 @@ public class Lexer {
 
     public int getLine() {
         return line;
+    }
+    
+    public Hashtable getSymbolTable(){
+        return words;
+    }
+    
+    public void setSymbolTable(Hashtable table){
+        words = table;
     }
 }
