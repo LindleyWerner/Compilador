@@ -256,7 +256,7 @@ public class Lexer {
             do {
                 sb.append(ch);
                 readch();
-            } while (Character.isLetterOrDigit(ch));
+            } while (Character.isLetterOrDigit(ch) && !eof);
 
             String s = sb.toString();
             SymbolTableObject obj1 = (SymbolTableObject) words.get(s);
@@ -293,12 +293,12 @@ public class Lexer {
     public int getLine() {
         return line;
     }
-    
-    public Hashtable getSymbolTable(){
+
+    public Hashtable getSymbolTable() {
         return words;
     }
-    
-    public void setSymbolTable(Hashtable table){
+
+    public void setSymbolTable(Hashtable table) {
         words = table;
     }
 }

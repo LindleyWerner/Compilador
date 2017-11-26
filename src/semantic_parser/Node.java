@@ -12,11 +12,4 @@ public class Node {
     
     public Node(){}    
    
-    public void setType(Tag type){
-        this.type = type;
-    }
-    
-    public Tag getType(){
-        return this.type;
-    }
 }

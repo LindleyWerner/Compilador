@@ -1,0 +1,19 @@
+﻿program
+ int pontuacao, pontuacaoMaxima, pontuacaoMinima;
+ string  disponibilidade;
+
+ disponibilidade = "Sim";
+ pontuacaoMinima = 50;
+ pontuacaoMaxima = 100;
+
+ if ((pontuacao > pontuacaoMinima) && (disponibilidade=="Sim")) then
+  print("Candidato aprovado");
+ else
+  if ((pontuacao > pontuacaoMinima) || (disponibilidade=="Sim")) then
+   print("Candidato aprovado");
+  end
+  if ((pontuacao > pontuacaoMinima) || (disponibilidade=="Sim")) then
+   print("Candidato aprovado");
+  end
+ end 
+end

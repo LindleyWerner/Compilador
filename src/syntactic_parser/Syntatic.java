@@ -52,11 +52,10 @@ public class Syntatic {
             if (debug) {
                 System.out.println(tok.getLexeme());
             }
-            if(tok.getTag().compareTo(Tag.LINE_COMMENT) == 0
-                    || tok.getTag().compareTo(Tag.BLOCK_COMMENT) == 0){
+            if (tok.getTag().compareTo(Tag.LINE_COMMENT) == 0
+                    || tok.getTag().compareTo(Tag.BLOCK_COMMENT) == 0) {
                 advance();
-            }
-            else if (!(tok.getTag().compareTo(Tag.EOF) == 0)) {
+            } else if (!(tok.getTag().compareTo(Tag.EOF) == 0)) {
                 if (tok.getTag().compareTo(Tag.ERROR_CARACTER_INESPERADO) == 0
                         || tok.getTag().compareTo(Tag.ERROR_CARACTER_INVALIDO) == 0) {
                     lexicalError();
@@ -130,25 +129,25 @@ public class Syntatic {
             advance();
         }
     }
-    
-    private void semanticError(Tag expected, Tag received){
-        if(expected != Tag.VOID && received != Tag.VOID){
-            semanticError ++;
+
+    private void semanticErrorUnexpectedTag(Tag expected, Tag received) {
+        if (expected != Tag.VOID && received != Tag.VOID) {
+            semanticError++;
             System.out.println("Erro semântico, linha: " + lexer.getLine()
                     + ", esperado: " + expected.toString() + " recebido: " + received.toString());
         }
     }
-    
-    private void semanticError2(String lexeme){
-        semanticError ++;
+
+    private void semanticErrorAlreadyDeclared(String lexeme) {
+        semanticError++;
         System.out.println("Erro semântico, linha: " + lexer.getLine()
-                    + ", variável '" + lexeme + "' já foi declarada");
+                + ", variável '" + lexeme + "' já foi declarada");
     }
-    
-    private void semanticError3(String lexeme){
-        semanticError ++;
+
+    private void semanticErrorNotDeclared(String lexeme) {
+        semanticError++;
         System.out.println("Erro semântico, linha: " + lexer.getLine()
-                    + ", variável '" + lexeme + "' não declarada");
+                + ", variável '" + lexeme + "' não declarada");
     }
 
     //program ::= program [decl-list] stmt-list end
@@ -251,13 +250,13 @@ public class Syntatic {
             System.out.println("> type");
         }
         //type ::= int
-        if (tok.getTag().compareTo(Tag.INT) == 0) {            
+        if (tok.getTag().compareTo(Tag.INT) == 0) {
             if (!eat(Tag.INT, "type")) {
                 return node;
             }
             node.type = Tag.INT;
             // type ::= string
-        } else if (tok.getTag().compareTo(Tag.STRING) == 0) {            
+        } else if (tok.getTag().compareTo(Tag.STRING) == 0) {
             if (!eat(Tag.STRING, "type")) {
                 return node;
             }
@@ -300,7 +299,7 @@ public class Syntatic {
             error("stmtList");
         }
         if (debug) {
-            System.out.println("< stmtList < "+node.type);
+            System.out.println("< stmtList < " + node.type);
         }
         return node;
     }
@@ -343,7 +342,7 @@ public class Syntatic {
             error("stmt");
         }
         if (debug) {
-            System.out.println("< stmt < "+node.type);
+            System.out.println("< stmt < " + node.type);
         }
         return node;
     }
@@ -361,16 +360,16 @@ public class Syntatic {
                 return node;
             }
             aux = simpleExpr().type;
-            if(aux != node.type){
-                semanticError(node.type, aux);
-                node.type = node.type;                
+            if (aux != node.type) {
+                semanticErrorUnexpectedTag(node.type, aux);
+                node.type = node.type;
             }
         } else {
             listTagEsperadas.add(Tag.ID);
             error("assingStmt");
         }
         if (debug) {
-            System.out.println("< assingStmt <"+node.type);
+            System.out.println("< assingStmt <" + node.type);
         }
         return node;
     }
@@ -396,7 +395,7 @@ public class Syntatic {
             error("ifStmt");
         }
         if (debug) {
-            System.out.println("< ifStmt < "+node.type);
+            System.out.println("< ifStmt < " + node.type);
         }
         return node;
     }
@@ -426,7 +425,7 @@ public class Syntatic {
             error("ifStmtPrime");
         }
         if (debug) {
-            System.out.println("< ifStmtPrime < "+node.type);
+            System.out.println("< ifStmtPrime < " + node.type);
         }
         return node;
     }
@@ -454,7 +453,7 @@ public class Syntatic {
             error("condition");
         }
         if (debug) {
-            System.out.println("< condition < "+node.type);
+            System.out.println("< condition < " + node.type);
         }
         return node;
     }
@@ -476,7 +475,7 @@ public class Syntatic {
             error("whileStmt");
         }
         if (debug) {
-            System.out.println("< whileStmt < "+node.type);
+            System.out.println("< whileStmt < " + node.type);
         }
         return node;
     }
@@ -500,7 +499,7 @@ public class Syntatic {
             error("stmtSufix");
         }
         if (debug) {
-            System.out.println("< stmtSufix < "+node.type);
+            System.out.println("< stmtSufix < " + node.type);
         }
         return node;
     }
@@ -527,7 +526,7 @@ public class Syntatic {
             error("readStmt");
         }
         if (debug) {
-            System.out.println("< readStmt < "+node.type);
+            System.out.println("< readStmt < " + node.type);
         }
         return node;
     }
@@ -554,7 +553,7 @@ public class Syntatic {
             error("writeStmt");
         }
         if (debug) {
-            System.out.println("< writeStmt < "+node.type);
+            System.out.println("< writeStmt < " + node.type);
         }
         return node;
     }
@@ -585,7 +584,7 @@ public class Syntatic {
             error("writable");
         }
         if (debug) {
-            System.out.println("< writable < "+node.type);
+            System.out.println("< writable < " + node.type);
         }
         return node;
     }
@@ -614,7 +613,7 @@ public class Syntatic {
             error("expression");
         }
         if (debug) {
-            System.out.println("< expression < "+node.type);
+            System.out.println("< expression < " + node.type);
         }
         return node;
     }
@@ -637,9 +636,9 @@ public class Syntatic {
                 || tok.getTag().compareTo(Tag.NE) == 0) {
             relop();
             node.type = simpleExpr().type;
-            if(node.type != type){
-                semanticError(type, node.type);
-                node.type = type;                
+            if (node.type != type) {
+                semanticErrorUnexpectedTag(type, node.type);
+                node.type = type;
             }
         } else {
             listTagEsperadas.add(Tag.EQ);
@@ -651,7 +650,7 @@ public class Syntatic {
             error("expressionPrime");
         }
         if (debug) {
-            System.out.println("< expressionPrime < "+node.type);
+            System.out.println("< expressionPrime < " + node.type);
         }
         return node;
     }
@@ -680,7 +679,7 @@ public class Syntatic {
             error("simpleExpr");
         }
         if (debug) {
-            System.out.println("< simpleExpr < "+node.type);
+            System.out.println("< simpleExpr < " + node.type);
         }
         return node;
     }
@@ -705,11 +704,22 @@ public class Syntatic {
         else if (tok.getTag().compareTo(Tag.PLUS) == 0
                 || tok.getTag().compareTo(Tag.MINUS) == 0
                 || tok.getTag().compareTo(Tag.OR) == 0) {
+
+            Token first = tok;
             addop();
             node.type = term().type;
-            if (node.type != type){
-                semanticError(type, node.type);
-                node.type = type;
+
+            if (first.getTag().compareTo(Tag.OR) == 0) {
+                if (node.type != Tag.INT && node.type != Tag.STRING) {
+                    semanticErrorUnexpectedTag(Tag.INT, node.type);
+                    semanticErrorUnexpectedTag(Tag.STRING, node.type);
+                    node.type = type;
+                }
+            } else {
+                if (node.type != type) {
+                    semanticErrorUnexpectedTag(type, node.type);
+                    node.type = type;
+                }
             }
             simpleExprPrime(node.type);
         } else {
@@ -719,7 +729,7 @@ public class Syntatic {
             error("simpleExprPrime");
         }
         if (debug) {
-            System.out.println("< simpleExprPrime < "+node.type);
+            System.out.println("< simpleExprPrime < " + node.type);
         }
         return node;
     }
@@ -752,7 +762,7 @@ public class Syntatic {
             error("term");
         }
         if (debug) {
-            System.out.println("< term < "+node.type);
+            System.out.println("< term < " + node.type);
         }
         return node;
     }
@@ -781,11 +791,20 @@ public class Syntatic {
         else if (tok.getTag().compareTo(Tag.MULT) == 0
                 || tok.getTag().compareTo(Tag.DIV) == 0
                 || tok.getTag().compareTo(Tag.AND) == 0) {
+            Token first = tok;
             mulop();
             aux = factorA().type;
-            if (aux != Tag.INT){
-                semanticError(Tag.INT, aux);
-                node.type = Tag.INT;                
+            if (first.getTag().compareTo(Tag.AND) == 0) {
+                if (aux != Tag.INT && aux != Tag.STRING) {
+                    semanticErrorUnexpectedTag(Tag.INT, aux);
+                    semanticErrorUnexpectedTag(Tag.STRING, aux);
+                    node.type = Tag.INT;
+                }
+            } else {
+                if (aux != Tag.INT) {
+                    semanticErrorUnexpectedTag(Tag.INT, aux);
+                    node.type = Tag.INT;
+                }
             }
             termPrime();
         } else {
@@ -795,7 +814,7 @@ public class Syntatic {
             error("termPrime");
         }
         if (debug) {
-            System.out.println("< termPrime < "+node.type);
+            System.out.println("< termPrime < " + node.type);
         }
         return node;
     }
@@ -833,7 +852,7 @@ public class Syntatic {
             error("factorA");
         }
         if (debug) {
-            System.out.println("< factorA < "+node.type);
+            System.out.println("< factorA < " + node.type);
         }
         return node;
     }
@@ -867,7 +886,7 @@ public class Syntatic {
             error("factor");
         }
         if (debug) {
-            System.out.println("< factor < "+node.type);
+            System.out.println("< factor < " + node.type);
         }
         return node;
     }
@@ -917,7 +936,7 @@ public class Syntatic {
             error("relop");
         }
         if (debug) {
-            System.out.println("< relop < "+node.type);
+            System.out.println("< relop < " + node.type);
         }
         return node;
     }
@@ -949,7 +968,7 @@ public class Syntatic {
             error("addop");
         }
         if (debug) {
-            System.out.println("< addop < "+node.type);
+            System.out.println("< addop < " + node.type);
         }
         return node;
     }
@@ -981,7 +1000,7 @@ public class Syntatic {
             error("mulop");
         }
         if (debug) {
-            System.out.println("< mulop < "+node.type);
+            System.out.println("< mulop < " + node.type);
         }
         return node;
     }
@@ -1003,7 +1022,7 @@ public class Syntatic {
             error("constant");
         }
         if (debug) {
-            System.out.println("< constant < "+node.type);
+            System.out.println("< constant < " + node.type);
         }
         return node;
     }
@@ -1015,16 +1034,16 @@ public class Syntatic {
         }
         //integer_const ::= digit {digit} 
         if (tok.getTag().compareTo(Tag.NUM) == 0) {
-            if (!eat(Tag.NUM, "integerConst")) {                
+            if (!eat(Tag.NUM, "integerConst")) {
                 return node;
             }
         } else {
             listTagEsperadas.add(Tag.NUM);
             error("integerConst");
         }
-        node.setType(Tag.INT);
+        node.type=Tag.INT;
         if (debug) {
-            System.out.println("< integerConst < "+node.type);
+            System.out.println("< integerConst < " + node.type);
         }
         return node;
     }
@@ -1036,16 +1055,16 @@ public class Syntatic {
         }
         // literal ::= " “" {caractere} "”" 
         if (tok.getTag().compareTo(Tag.TEXT) == 0) {
-            if (!eat(Tag.TEXT, "literal")) {                
+            if (!eat(Tag.TEXT, "literal")) {
                 return node;
             }
-            node.setType(Tag.STRING);
+            node.type=Tag.STRING;
         } else {
             listTagEsperadas.add(Tag.TEXT);
             error("literal");
-        }     
+        }
         if (debug) {
-            System.out.println("< literal < "+node.type);
+            System.out.println("< literal < " + node.type);
         }
         return node;
     }
@@ -1054,7 +1073,7 @@ public class Syntatic {
         Node node = new Node();
         Hashtable symbolTable;
         SymbolTableObject obj;
-        
+
         if (debug) {
             System.out.println("> identifier");
         }
@@ -1066,34 +1085,34 @@ public class Syntatic {
             }
             //Pega o tipo da tabela de símbolos
             symbolTable = lexer.getSymbolTable();
-            obj = (SymbolTableObject) symbolTable.get(actualTok.getLexeme());         
+            obj = (SymbolTableObject) symbolTable.get(actualTok.getLexeme());
             if (obj != null) {
-                if (type == Tag.VOID){
+                if (type == Tag.VOID) {
                     Tag aux = obj.getType();
-                    if(aux != Tag.VOID){
+                    if (aux != Tag.VOID) {
                         node.type = aux;
-                    }else{
-                        semanticError3(obj.getWord().getLexeme());
-                    }                    
-                }else{//atribuição
+                    } else {
+                        semanticErrorNotDeclared(obj.getWord().getLexeme());
+                    }
+                } else {//atribuição
                     node.type = type;
-                    if(obj.getType() != Tag.VOID){
-                        semanticError2(obj.getWord().getLexeme());
-                    }else{
+                    if (obj.getType() != Tag.VOID) {
+                        semanticErrorAlreadyDeclared(obj.getWord().getLexeme());
+                    } else {
                         obj.setType(type);
                         lexer.setSymbolTable(symbolTable);
-                    }                    
+                    }
                 }
-            }else{
+            } else {
                 System.out.println("Erro em syntatic_parser.syntatic, linha 985");
             }
-            
+
         } else {
             listTagEsperadas.add(Tag.ID);
             error("identifier");
         }
         if (debug) {
-            System.out.println("< identifier < "+node.type);
+            System.out.println("< identifier < " + node.type);
         }
         return node;
     }
